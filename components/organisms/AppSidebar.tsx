@@ -15,7 +15,7 @@ export const AppSidebar = ({ className }: AppSidebarProps) => (
     aria-label="Main navigation"
   >
       <nav className="space-y-2">
-        <NavButtonLink href="/movements" label="Ingresos y egresos" />
+        <NavButtonLink href="/movements" label="Ingresos y gastos" />
         <NavButtonLink href="/users" label="Usuarios" />
         <NavButtonLink href="/reports" label="Reportes" />
       </nav>
