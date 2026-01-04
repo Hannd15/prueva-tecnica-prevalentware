@@ -12,11 +12,7 @@ type MovementListItem = {
   amount: number;
   date: string;
   type: MovementType;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  } | null;
+  userName: string | null;
 };
 
 type PaginatedResponse<T> = {
@@ -27,6 +23,11 @@ type PaginatedResponse<T> = {
     pageSize: number;
     totalPages: number;
   };
+  summary: {
+    totalIncomes: number;
+    totalExpenses: number;
+    balance: number;
+  };
 };
 
 type ErrorResponse = {
@@ -35,9 +36,7 @@ type ErrorResponse = {
 
 const userSelect = {
   select: {
-    id: true,
     name: true,
-    email: true,
   },
 } as const;
 
@@ -67,31 +66,15 @@ const toMovementListItem = (movement: {
   amount: number;
   date: Date;
   type: MovementType;
-  user: { id: string; name: string; email: string } | null;
+  user: { name: string | null } | null;
 }): MovementListItem => {
-  const { user } = movement;
-  if (!user) {
-    return {
-      id: movement.id,
-      concept: movement.concept,
-      amount: movement.amount,
-      date: movement.date.toISOString(),
-      type: movement.type,
-      user: null,
-    };
-  }
-
   return {
     id: movement.id,
     concept: movement.concept,
     amount: movement.amount,
     date: movement.date.toISOString(),
     type: movement.type,
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-    },
+    userName: movement.user?.name ?? null,
   };
 };
 
@@ -102,7 +85,7 @@ const handleGet = async (
   const page = Math.max(1, parseNumber(req.query.page) ?? 1);
   const pageSize = Math.max(1, parseNumber(req.query.pageSize) ?? 10);
 
-  const [total, movements] = await Promise.all([
+  const [total, movements, summary] = await Promise.all([
     prisma.movement.count(),
     prisma.movement.findMany({
       orderBy: { date: 'desc' },
@@ -110,7 +93,18 @@ const handleGet = async (
       skip: (page - 1) * pageSize,
       take: pageSize,
     }),
+    prisma.movement.groupBy({
+      by: ['type'],
+      _sum: {
+        amount: true,
+      },
+    }),
   ]);
+
+  const totalIncomes =
+    summary.find((s) => s.type === MovementType.INCOME)?._sum.amount ?? 0;
+  const totalExpenses =
+    summary.find((s) => s.type === MovementType.EXPENSE)?._sum.amount ?? 0;
 
   return res.status(200).json({
     data: movements.map(toMovementListItem),
@@ -119,6 +113,11 @@ const handleGet = async (
       page,
       pageSize,
       totalPages: Math.ceil(total / pageSize),
+    },
+    summary: {
+      totalIncomes,
+      totalExpenses,
+      balance: totalIncomes - totalExpenses,
     },
   });
 };

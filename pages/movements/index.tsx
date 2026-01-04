@@ -4,6 +4,7 @@ import { MovementType } from '@prisma/client';
 
 import { usePermissions } from '@/lib/rbac/client';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
+import { TitledCard } from '@/components/molecules/TitledCard';
 import {
   DataTable,
   type DataTableColumn,
@@ -11,7 +12,7 @@ import {
 import { PageHeader } from '@/components/organisms/PageHeader';
 import { AppShell } from '@/components/templates/AppShell';
 import { Button } from '@/components/ui/button';
-import { formatDate } from '@/lib/utils';
+import { cn, formatDate } from '@/lib/utils';
 
 type MovementListItem = {
   id: string;
@@ -19,11 +20,7 @@ type MovementListItem = {
   amount: number;
   date: string;
   type: MovementType;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  } | null;
+  userName: string | null;
 };
 
 const formatCurrency = (value: number) =>
@@ -45,6 +42,11 @@ const MovementsPage = () => {
     page: 1,
     pageSize: 10,
     totalPages: 0,
+  });
+  const [summary, setSummary] = useState({
+    totalIncomes: 0,
+    totalExpenses: 0,
+    balance: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -88,7 +90,7 @@ const MovementsPage = () => {
     {
       key: 'user',
       header: 'Usuario',
-      cell: (row) => (row.user ? row.user.name : '-'),
+      cell: (row) => row.userName ?? '-',
     },
   ];
 
@@ -122,10 +124,12 @@ const MovementsPage = () => {
         const json = (await res.json()) as {
           data: MovementListItem[];
           meta: typeof meta;
+          summary: typeof summary;
         };
         if (!cancelled) {
           setData(json.data);
           setMeta(json.meta);
+          setSummary(json.summary);
         }
       } catch (e) {
         if (!cancelled)
@@ -150,6 +154,38 @@ const MovementsPage = () => {
         title='Gestión de ingresos y gastos'
         subtitle='Consulta y registra movimientos financieros.'
       />
+
+      <div className='grid grid-cols-3 gap-6'>
+        <TitledCard
+          title='Total Ingresos'
+          titleClassName='text-sm font-medium text-muted-foreground'
+        >
+          <div className='text-2xl font-bold text-green-600'>
+            {isLoading ? '...' : formatCurrency(summary.totalIncomes)}
+          </div>
+        </TitledCard>
+        <TitledCard
+          title='Total Egresos'
+          titleClassName='text-sm font-medium text-muted-foreground'
+        >
+          <div className='text-2xl font-bold text-red-600'>
+            {isLoading ? '...' : formatCurrency(summary.totalExpenses)}
+          </div>
+        </TitledCard>
+        <TitledCard
+          title='Saldo Balance'
+          titleClassName='text-sm font-medium text-muted-foreground'
+        >
+          <div
+            className={cn(
+              'text-2xl font-bold',
+              summary.balance >= 0 ? 'text-green-600' : 'text-red-600'
+            )}
+          >
+            {isLoading ? '...' : formatCurrency(summary.balance)}
+          </div>
+        </TitledCard>
+      </div>
 
       <DataTable
         title='Movimientos'
