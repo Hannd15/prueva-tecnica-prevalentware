@@ -11,6 +11,7 @@ import {
 import { PageHeader } from '@/components/organisms/PageHeader';
 import { AppShell } from '@/components/templates/AppShell';
 import { Button } from '@/components/ui/button';
+import { formatDate } from '@/lib/utils';
 
 type MovementListItem = {
   id: string;
@@ -31,17 +32,6 @@ const formatCurrency = (value: number) =>
     currency: 'COP',
     maximumFractionDigits: 0,
   }).format(value);
-
-const formatDate = (iso: string) => {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return '-';
-
-  return new Intl.DateTimeFormat('es-CO', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(date);
-};
 
 /**
  * Movements management page (income/expenses).

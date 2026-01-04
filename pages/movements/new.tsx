@@ -22,7 +22,9 @@ const NewMovementPage = () => {
 
   const [amount, setAmount] = useState<string>('');
   const [concept, setConcept] = useState<string>('');
-  const [date, setDate] = useState<string>('');
+  const [date, setDate] = useState<string>(
+    new Date().toISOString().split('T')[0]
+  );
   const [type, setType] = useState<MovementType>(MovementType.INCOME);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
