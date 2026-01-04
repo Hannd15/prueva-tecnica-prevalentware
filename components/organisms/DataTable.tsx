@@ -60,7 +60,7 @@ export const DataTable = <Row,>({
   const renderContent = () => {
     if (isLoading) {
       return (
-        <div className='flex h-32 items-center justify-center text-sm text-muted-foreground'>
+        <div className='flex flex-1 items-center justify-center text-sm text-muted-foreground'>
           Cargando...
         </div>
       );
@@ -68,48 +68,52 @@ export const DataTable = <Row,>({
 
     if (error) {
       return (
-        <div className='flex h-32 items-center justify-center text-sm text-destructive'>
+        <div className='flex flex-1 items-center justify-center text-sm text-destructive'>
           {error}
         </div>
       );
     }
 
     return (
-      <div className='relative flex-1 overflow-auto'>
-        <Table>
-          <TableHeader className='sticky top-0 z-10 bg-background'>
+      <Table containerClassName='flex-1'>
+        <TableHeader>
+          <TableRow>
+            {columns.map((column) => (
+              <TableHead
+                key={column.key}
+                className={cn(
+                  'sticky top-0 z-10 bg-background shadow-[0_1px_0_0_rgba(0,0,0,0.1)]',
+                  column.headerClassName
+                )}
+              >
+                {column.header}
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.length === 0 ? (
             <TableRow>
-              {columns.map((column) => (
-                <TableHead key={column.key} className={column.headerClassName}>
-                  {column.header}
-                </TableHead>
-              ))}
+              <TableCell
+                colSpan={columns.length}
+                className='h-24 text-center text-muted-foreground'
+              >
+                {emptyMessage}
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className='h-24 text-center text-muted-foreground'
-                >
-                  {emptyMessage}
-                </TableCell>
+          ) : (
+            rows.map((row) => (
+              <TableRow key={getRowKey(row)}>
+                {columns.map((column) => (
+                  <TableCell key={column.key} className={column.className}>
+                    {column.cell(row)}
+                  </TableCell>
+                ))}
               </TableRow>
-            ) : (
-              rows.map((row) => (
-                <TableRow key={getRowKey(row)}>
-                  {columns.map((column) => (
-                    <TableCell key={column.key} className={column.className}>
-                      {column.cell(row)}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+            ))
+          )}
+        </TableBody>
+      </Table>
     );
   };
 
