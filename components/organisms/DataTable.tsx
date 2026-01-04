@@ -1,5 +1,9 @@
 import type { ReactNode } from 'react';
 
+import {
+  Pagination,
+  type PaginationProps,
+} from '@/components/molecules/Pagination';
 import { TitledCard } from '@/components/molecules/TitledCard';
 import {
   Table,
@@ -9,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 
 export type DataTableColumn<Row> = {
   key: string;
@@ -28,6 +33,8 @@ export type DataTableProps<Row> = {
   isLoading?: boolean;
   error?: string | null;
   emptyMessage?: string;
+  pagination?: PaginationProps;
+  className?: string;
 };
 
 /**
@@ -47,58 +54,76 @@ export const DataTable = <Row,>({
   isLoading = false,
   error = null,
   emptyMessage = 'No hay registros.',
+  pagination,
+  className,
 }: DataTableProps<Row>) => {
-  if (isLoading) {
-    return (
-      <TitledCard title={title} description={description} actions={actions}>
-        <div className='text-sm text-muted-foreground'>Cargando...</div>
-      </TitledCard>
-    );
-  }
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className='flex h-32 items-center justify-center text-sm text-muted-foreground'>
+          Cargando...
+        </div>
+      );
+    }
 
-  if (error) {
+    if (error) {
+      return (
+        <div className='flex h-32 items-center justify-center text-sm text-destructive'>
+          {error}
+        </div>
+      );
+    }
+
     return (
-      <TitledCard title={title} description={description} actions={actions}>
-        <div className='text-sm text-destructive'>{error}</div>
-      </TitledCard>
+      <div className='relative flex-1 overflow-auto'>
+        <Table>
+          <TableHeader className='sticky top-0 z-10 bg-background'>
+            <TableRow>
+              {columns.map((column) => (
+                <TableHead key={column.key} className={column.headerClassName}>
+                  {column.header}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className='h-24 text-center text-muted-foreground'
+                >
+                  {emptyMessage}
+                </TableCell>
+              </TableRow>
+            ) : (
+              rows.map((row) => (
+                <TableRow key={getRowKey(row)}>
+                  {columns.map((column) => (
+                    <TableCell key={column.key} className={column.className}>
+                      {column.cell(row)}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     );
-  }
+  };
 
   return (
-    <TitledCard title={title} description={description} actions={actions}>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {columns.map((column) => (
-              <TableHead key={column.key} className={column.headerClassName}>
-                {column.header}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rows.length === 0 ? (
-            <TableRow>
-              <TableCell
-                colSpan={columns.length}
-                className='text-muted-foreground'
-              >
-                {emptyMessage}
-              </TableCell>
-            </TableRow>
-          ) : (
-            rows.map((row) => (
-              <TableRow key={getRowKey(row)}>
-                {columns.map((column) => (
-                  <TableCell key={column.key} className={column.className}>
-                    {column.cell(row)}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+    <TitledCard
+      title={title}
+      description={description}
+      actions={actions}
+      className={cn('flex flex-col overflow-hidden', className)}
+      contentClassName='flex flex-1 flex-col overflow-hidden p-0'
+    >
+      {renderContent()}
+
+      {pagination && <Pagination {...pagination} />}
     </TitledCard>
   );
 };

@@ -46,12 +46,19 @@ export const AppShell = ({
       </title>
     </Head>
 
-    <div className={cn('min-h-screen bg-background', className)}>
-      <div className='flex min-h-screen'>
+    <div className={cn('h-screen bg-background', className)}>
+      <div className='flex h-full'>
         <AppSidebar />
-        <main className='flex-1 p-12'>
+        <main className='flex flex-1 flex-col p-12 overflow-hidden'>
           <AppShellHeader />
-          <div className={cn('space-y-10', contentClassName)}>{children}</div>
+          <div
+            className={cn(
+              'flex flex-1 flex-col min-h-0 space-y-10',
+              contentClassName
+            )}
+          >
+            {children}
+          </div>
         </main>
       </div>
     </div>

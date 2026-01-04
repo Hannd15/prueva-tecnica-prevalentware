@@ -19,6 +19,16 @@ type MovementListItem = {
   } | null;
 };
 
+type PaginatedResponse<T> = {
+  data: T[];
+  meta: {
+    total: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+  };
+};
+
 type ErrorResponse = {
   error: string;
 };
@@ -86,14 +96,31 @@ const toMovementListItem = (movement: {
 };
 
 const handleGet = async (
-  res: NextApiResponse<MovementListItem[] | ErrorResponse>
+  req: NextApiRequest,
+  res: NextApiResponse<PaginatedResponse<MovementListItem> | ErrorResponse>
 ) => {
-  const movements = await prisma.movement.findMany({
-    orderBy: { date: 'desc' },
-    include: { user: userSelect },
-  });
+  const page = Math.max(1, parseNumber(req.query.page) ?? 1);
+  const pageSize = Math.max(1, parseNumber(req.query.pageSize) ?? 10);
 
-  return res.status(200).json(movements.map(toMovementListItem));
+  const [total, movements] = await Promise.all([
+    prisma.movement.count(),
+    prisma.movement.findMany({
+      orderBy: { date: 'desc' },
+      include: { user: userSelect },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+  ]);
+
+  return res.status(200).json({
+    data: movements.map(toMovementListItem),
+    meta: {
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    },
+  });
 };
 
 const handlePost = async (
@@ -135,7 +162,9 @@ const handlePost = async (
  */
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<MovementListItem[] | MovementListItem | ErrorResponse>
+  res: NextApiResponse<
+    PaginatedResponse<MovementListItem> | MovementListItem | ErrorResponse
+  >
 ) {
   const session = await getServerSession(req);
   const userId = session?.user?.id;
@@ -151,7 +180,7 @@ export default async function handler(
       if (!permissions.includes(PERMISSIONS.MOVEMENTS_READ)) {
         return res.status(403).json({ error: 'Forbidden' });
       }
-      return handleGet(res);
+      return handleGet(req, res);
     case 'POST':
       if (!permissions.includes(PERMISSIONS.MOVEMENTS_CREATE)) {
         return res.status(403).json({ error: 'Forbidden' });

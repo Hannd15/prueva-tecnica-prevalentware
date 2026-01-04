@@ -40,6 +40,12 @@ const formatCurrency = (value: number) =>
  */
 const MovementsPage = () => {
   const [data, setData] = useState<MovementListItem[]>([]);
+  const [meta, setMeta] = useState({
+    total: 0,
+    page: 1,
+    pageSize: 10,
+    totalPages: 0,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { can } = usePermissions();
@@ -94,7 +100,12 @@ const MovementsPage = () => {
       setError(null);
 
       try {
-        const res = await fetch('/api/movements', {
+        const query = new URLSearchParams({
+          page: String(meta.page),
+          pageSize: String(meta.pageSize),
+        });
+
+        const res = await fetch(`/api/movements?${query.toString()}`, {
           method: 'GET',
           headers: { Accept: 'application/json' },
         });
@@ -108,8 +119,14 @@ const MovementsPage = () => {
           );
         }
 
-        const json = (await res.json()) as MovementListItem[];
-        if (!cancelled) setData(json);
+        const json = (await res.json()) as {
+          data: MovementListItem[];
+          meta: typeof meta;
+        };
+        if (!cancelled) {
+          setData(json.data);
+          setMeta(json.meta);
+        }
       } catch (e) {
         if (!cancelled)
           setError(e instanceof Error ? e.message : 'Error desconocido');
@@ -122,10 +139,13 @@ const MovementsPage = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [meta.page, meta.pageSize]);
 
   return (
-    <AppShell pageTitle='Gestión de ingresos y gastos'>
+    <AppShell
+      pageTitle='Gestión de ingresos y gastos'
+      contentClassName='space-y-6'
+    >
       <PageHeader
         title='Gestión de ingresos y gastos'
         subtitle='Consulta y registra movimientos financieros.'
@@ -147,6 +167,13 @@ const MovementsPage = () => {
         isLoading={isLoading}
         error={error}
         emptyMessage='No hay movimientos aún.'
+        pagination={{
+          ...meta,
+          onPageChange: (page) => setMeta((prev) => ({ ...prev, page })),
+          onPageSizeChange: (pageSize) =>
+            setMeta((prev) => ({ ...prev, pageSize, page: 1 })),
+        }}
+        className='flex-1 min-h-0'
       />
     </AppShell>
   );
