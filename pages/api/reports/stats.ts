@@ -11,6 +11,19 @@ type ErrorResponse = {
   error: string;
 };
 
+/**
+ * @openapi
+ * /api/reports/stats:
+ *   get:
+ *     summary: Get financial statistics and chart data
+ *     responses:
+ *       200:
+ *         description: Statistics data
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ReportsStats | ErrorResponse>

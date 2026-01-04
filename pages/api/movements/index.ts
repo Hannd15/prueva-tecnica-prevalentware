@@ -56,6 +56,59 @@ const toMovementListItem = (movement: {
   userName: movement.user?.name ?? null,
 });
 
+/**
+ * @openapi
+ * /api/movements:
+ *   get:
+ *     summary: Get paginated movements
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *     responses:
+ *       200:
+ *         description: List of movements
+ *       401:
+ *         description: Unauthorized
+ *   post:
+ *     summary: Create a new movement
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - concept
+ *               - amount
+ *               - date
+ *               - type
+ *             properties:
+ *               concept:
+ *                 type: string
+ *               amount:
+ *                 type: number
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *               type:
+ *                 type: string
+ *                 enum: [INCOME, EXPENSE]
+ *     responses:
+ *       201:
+ *         description: Movement created
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized
+ */
 const handleGet = async (
   req: NextApiRequest,
   res: NextApiResponse<PaginatedMovementsResponse | ErrorResponse>

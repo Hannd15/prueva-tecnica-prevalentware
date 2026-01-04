@@ -6,6 +6,24 @@ import { PERMISSIONS } from '@/lib/rbac/permissions';
 import { getUserPermissionKeys } from '@/lib/rbac/server';
 import { formatDate } from '@/lib/utils';
 
+/**
+ * @openapi
+ * /api/reports/export:
+ *   get:
+ *     summary: Export movements to CSV
+ *     responses:
+ *       200:
+ *         description: CSV file
+ *         content:
+ *           text/csv:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

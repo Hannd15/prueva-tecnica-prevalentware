@@ -16,7 +16,7 @@ export const AppSidebar = ({ className }: AppSidebarProps) => (
   >
     <nav className='space-y-2'>
       <NavButtonLink href='/movements' label='Gestión de ingresos y gastos' />
-      <NavButtonLink href='/users' label='Usuarios' />
+      <NavButtonLink href='/users' label='Gestión de usuarios' />
       <NavButtonLink href='/reports' label='Reportes' />
     </nav>
   </aside>

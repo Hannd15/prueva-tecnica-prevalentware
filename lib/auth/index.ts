@@ -14,6 +14,11 @@ export const auth = betterAuth({
         required: true,
         defaultValue: 'role_admin',
       },
+      phone: {
+        type: 'string',
+        input: false,
+        required: false,
+      },
     },
   },
   databaseHooks: {
