@@ -1,8 +1,8 @@
-import Head from "next/head";
+import Head from 'next/head';
 
-import { HomeHeader } from "@/components/organisms/HomeHeader";
-import { HomeActionCards } from "@/components/organisms/HomeActionCards";
-import { AppShell } from "@/components/templates/AppShell";
+import { PageHeader } from '@/components/organisms/PageHeader';
+import { HomeActionCards } from '@/components/organisms/HomeActionCards';
+import { AppShell } from '@/components/templates/AppShell';
 
 /**
  * Home page.
@@ -11,16 +11,19 @@ import { AppShell } from "@/components/templates/AppShell";
  * Authentication/authorization will be added later.
  */
 const Home = () => (
-	<>
-		<Head>
-			<title>Home | Prueba Técnica</title>
-		</Head>
+  <>
+    <Head>
+      <title>Home | Prueba Técnica</title>
+    </Head>
 
-		<AppShell>
-			<HomeHeader />
-			<HomeActionCards />
-		</AppShell>
-	</>
+    <AppShell>
+      <PageHeader
+        title='Bienvenido'
+        subtitle='Selecciona una sección para empezar.'
+      />
+      <HomeActionCards />
+    </AppShell>
+  </>
 );
 
 export default Home;

@@ -1,7 +1,7 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
-import { AppSidebar } from "@/components/organisms/AppSidebar";
-import { cn } from "@/lib/utils";
+import { AppSidebar } from '@/components/organisms/AppSidebar';
+import { cn } from '@/lib/utils';
 
 export type AppShellProps = {
   children: ReactNode;
@@ -20,12 +20,16 @@ export type AppShellProps = {
  *
  * Non-responsive by design (per the technical test notes).
  */
-export const AppShell = ({ children, className, contentClassName }: AppShellProps) => (
-  <div className={cn("min-h-screen bg-background", className)}>
-    <div className="flex min-h-screen">
+export const AppShell = ({
+  children,
+  className,
+  contentClassName,
+}: AppShellProps) => (
+  <div className={cn('min-h-screen bg-background', className)}>
+    <div className='flex min-h-screen'>
       <AppSidebar />
-      <main className="flex-1 p-12">
-        <div className={cn("space-y-10", contentClassName)}>{children}</div>
+      <main className='flex-1 p-12'>
+        <div className={cn('space-y-10', contentClassName)}>{children}</div>
       </main>
     </div>
   </div>

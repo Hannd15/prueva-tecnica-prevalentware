@@ -1,4 +1,4 @@
-import { NavButtonLink } from "@/components/molecules/NavButtonLink";
+import { NavButtonLink } from '@/components/molecules/NavButtonLink';
 
 export type AppSidebarProps = {
   className?: string;
@@ -11,13 +11,13 @@ export type AppSidebarProps = {
  */
 export const AppSidebar = ({ className }: AppSidebarProps) => (
   <aside
-    className={className ?? "w-72 shrink-0 border-r bg-muted/40 p-4"}
-    aria-label="Main navigation"
+    className={className ?? 'w-72 shrink-0 border-r bg-muted/40 p-4'}
+    aria-label='Main navigation'
   >
-      <nav className="space-y-2">
-        <NavButtonLink href="/movements" label="Ingresos y gastos" />
-        <NavButtonLink href="/users" label="Usuarios" />
-        <NavButtonLink href="/reports" label="Reportes" />
-      </nav>
+    <nav className='space-y-2'>
+      <NavButtonLink href='/movements' label='Gestión de ingresos y gastos' />
+      <NavButtonLink href='/users' label='Usuarios' />
+      <NavButtonLink href='/reports' label='Reportes' />
+    </nav>
   </aside>
 );
