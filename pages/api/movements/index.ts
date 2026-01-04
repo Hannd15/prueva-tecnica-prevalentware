@@ -67,16 +67,14 @@ const toMovementListItem = (movement: {
   date: Date;
   type: MovementType;
   user: { name: string | null } | null;
-}): MovementListItem => {
-  return {
-    id: movement.id,
-    concept: movement.concept,
-    amount: movement.amount,
-    date: movement.date.toISOString(),
-    type: movement.type,
-    userName: movement.user?.name ?? null,
-  };
-};
+}): MovementListItem => ({
+  id: movement.id,
+  concept: movement.concept,
+  amount: movement.amount,
+  date: movement.date.toISOString(),
+  type: movement.type,
+  userName: movement.user?.name ?? null,
+});
 
 const handleGet = async (
   req: NextApiRequest,
@@ -122,24 +120,49 @@ const handleGet = async (
   });
 };
 
+const parseMovementBody = (body: Record<string, unknown>) => ({
+  amount: parseNumber(body?.amount),
+  concept: typeof body?.concept === 'string' ? body.concept.trim() : '',
+  date: parseDate(body?.date),
+  type: body?.type as MovementType | undefined,
+});
+
+const validateMovement = (
+  body: Record<string, unknown>
+):
+  | { error: string }
+  | {
+      data: {
+        concept: string;
+        amount: number;
+        date: Date;
+        type: MovementType;
+      };
+    } => {
+  const { amount, concept, date, type } = parseMovementBody(body);
+
+  if (!concept) return { error: 'Concepto es requerido' };
+  if (amount === null) return { error: 'Monto es inválido' };
+  if (!date) return { error: 'Fecha es inválida' };
+  if (!type || !Object.values(MovementType).includes(type)) {
+    return { error: 'Tipo es inválido' };
+  }
+
+  return { data: { concept, amount, date, type } };
+};
+
 const handlePost = async (
   req: NextApiRequest,
   res: NextApiResponse<MovementListItem | ErrorResponse>,
   userId: string
 ) => {
-  const amount = parseNumber(req.body?.amount);
-  const concept =
-    typeof req.body?.concept === 'string' ? req.body.concept.trim() : '';
-  const date = parseDate(req.body?.date);
-  const type = req.body?.type as MovementType | undefined;
+  const validation = validateMovement(req.body as Record<string, unknown>);
 
-  if (!concept) return res.status(400).json({ error: 'Concepto es requerido' });
-  if (amount === null)
-    return res.status(400).json({ error: 'Monto es inválido' });
-  if (!date) return res.status(400).json({ error: 'Fecha es inválida' });
-  if (!type || !Object.values(MovementType).includes(type)) {
-    return res.status(400).json({ error: 'Tipo es inválido' });
+  if ('error' in validation) {
+    return res.status(400).json({ error: validation.error });
   }
+
+  const { concept, amount, date, type } = validation.data;
 
   const movement = await prisma.movement.create({
     data: {

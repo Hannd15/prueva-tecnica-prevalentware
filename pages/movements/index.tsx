@@ -4,7 +4,6 @@ import { MovementType } from '@prisma/client';
 
 import { usePermissions } from '@/lib/rbac/client';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
-import { TitledCard } from '@/components/molecules/TitledCard';
 import {
   DataTable,
   type DataTableColumn,
@@ -12,7 +11,7 @@ import {
 import { PageHeader } from '@/components/organisms/PageHeader';
 import { AppShell } from '@/components/templates/AppShell';
 import { Button } from '@/components/ui/button';
-import { cn, formatDate } from '@/lib/utils';
+import { formatDate, formatCurrency } from '@/lib/utils';
 
 type MovementListItem = {
   id: string;
@@ -22,13 +21,6 @@ type MovementListItem = {
   type: MovementType;
   userName: string | null;
 };
-
-const formatCurrency = (value: number) =>
-  new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    maximumFractionDigits: 0,
-  }).format(value);
 
 /**
  * Movements management page (income/expenses).
@@ -155,38 +147,6 @@ const MovementsPage = () => {
         subtitle='Consulta y registra movimientos financieros.'
       />
 
-      <div className='grid grid-cols-3 gap-6'>
-        <TitledCard
-          title='Total Ingresos'
-          titleClassName='text-sm font-medium text-muted-foreground'
-        >
-          <div className='text-2xl font-bold text-green-600'>
-            {isLoading ? '...' : formatCurrency(summary.totalIncomes)}
-          </div>
-        </TitledCard>
-        <TitledCard
-          title='Total Egresos'
-          titleClassName='text-sm font-medium text-muted-foreground'
-        >
-          <div className='text-2xl font-bold text-red-600'>
-            {isLoading ? '...' : formatCurrency(summary.totalExpenses)}
-          </div>
-        </TitledCard>
-        <TitledCard
-          title='Saldo Balance'
-          titleClassName='text-sm font-medium text-muted-foreground'
-        >
-          <div
-            className={cn(
-              'text-2xl font-bold',
-              summary.balance >= 0 ? 'text-green-600' : 'text-red-600'
-            )}
-          >
-            {isLoading ? '...' : formatCurrency(summary.balance)}
-          </div>
-        </TitledCard>
-      </div>
-
       <DataTable
         title='Movimientos'
         description='Listado de ingresos y egresos registrados.'
@@ -209,6 +169,18 @@ const MovementsPage = () => {
           onPageSizeChange: (pageSize) =>
             setMeta((prev) => ({ ...prev, pageSize, page: 1 })),
         }}
+        footer={
+          <div className='flex items-center gap-2 text-lg font-bold'>
+            <span>Total:</span>
+            <span
+              className={
+                summary.balance >= 0 ? 'text-green-600' : 'text-red-600'
+              }
+            >
+              {isLoading ? '...' : formatCurrency(summary.balance)}
+            </span>
+          </div>
+        }
         className='flex-1 min-h-0'
       />
     </AppShell>

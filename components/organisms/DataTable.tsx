@@ -34,6 +34,7 @@ export type DataTableProps<Row> = {
   error?: string | null;
   emptyMessage?: string;
   pagination?: PaginationProps;
+  footer?: ReactNode;
   className?: string;
 };
 
@@ -55,6 +56,7 @@ export const DataTable = <Row,>({
   error = null,
   emptyMessage = 'No hay registros.',
   pagination,
+  footer,
   className,
 }: DataTableProps<Row>) => {
   const renderContent = () => {
@@ -128,6 +130,12 @@ export const DataTable = <Row,>({
       {renderContent()}
 
       {pagination && <Pagination {...pagination} />}
+
+      {footer && (
+        <div className='flex justify-end border-t bg-muted/50 p-4'>
+          {footer}
+        </div>
+      )}
     </TitledCard>
   );
 };

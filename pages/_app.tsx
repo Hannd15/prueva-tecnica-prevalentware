@@ -20,7 +20,13 @@ type AppPropsWithAuth = AppProps & {
 
 const isPublicPath = (pathname: string) => pathname === '/login';
 
-const MyApp = ({ Component, pageProps }: AppPropsWithAuth) => {
+const AuthGuard = ({
+  children,
+  requiredPermissions,
+}: {
+  children: React.ReactNode;
+  requiredPermissions?: string[];
+}) => {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const { permissions, isLoading: isPermissionsLoading } = usePermissions({
@@ -28,7 +34,6 @@ const MyApp = ({ Component, pageProps }: AppPropsWithAuth) => {
   });
 
   useEffect(() => {
-    if (isPublicPath(router.pathname)) return;
     if (isPending) return;
     if (!session) {
       void router.replace('/login');
@@ -36,50 +41,43 @@ const MyApp = ({ Component, pageProps }: AppPropsWithAuth) => {
   }, [isPending, router, session]);
 
   useEffect(() => {
-    const required = Component.requiredPermissions;
-    if (!required?.length) return;
-    if (!session) return;
-    if (isPermissionsLoading) return;
+    if (!requiredPermissions?.length || !session || isPermissionsLoading)
+      return;
 
-    if (!hasAllPermissions(permissions, required)) {
+    if (!hasAllPermissions(permissions, requiredPermissions)) {
       void router.replace('/');
     }
-  }, [
-    Component.requiredPermissions,
-    isPermissionsLoading,
-    permissions,
-    router,
-    session,
-  ]);
+  }, [requiredPermissions, isPermissionsLoading, permissions, router, session]);
 
-  if (!isPublicPath(router.pathname) && (isPending || !session)) {
-    return null;
+  if (isPending || !session) return null;
+
+  if (requiredPermissions?.length) {
+    if (isPermissionsLoading) return null;
+    if (!hasAllPermissions(permissions, requiredPermissions)) return null;
   }
 
-  if (
-    Component.requiredPermissions?.length &&
-    session &&
-    isPermissionsLoading
-  ) {
-    return null;
+  return <>{children}</>;
+};
+
+const MyApp = ({ Component, pageProps }: AppPropsWithAuth) => {
+  const router = useRouter();
+
+  if (isPublicPath(router.pathname)) {
+    return <Component {...pageProps} />;
   }
 
-  if (
-    Component.requiredPermissions?.length &&
-    session &&
-    !hasAllPermissions(permissions, Component.requiredPermissions)
-  ) {
-    return null;
-  }
-
-  return <Component {...pageProps} />;
+  return (
+    <AuthGuard requiredPermissions={Component.requiredPermissions}>
+      <Component {...pageProps} />
+    </AuthGuard>
+  );
 };
 
 MyApp.getInitialProps = async (appContext: AppContext) => {
   const appProps = await App.getInitialProps(appContext);
 
   const { ctx, Component } = appContext;
-  const pathname = ctx.pathname;
+  const { pathname } = ctx;
 
   if (isPublicPath(pathname)) {
     return appProps;

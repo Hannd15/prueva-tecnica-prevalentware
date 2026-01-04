@@ -35,6 +35,36 @@ const main = async () => {
     },
   });
 
+  await prisma.permission.upsert({
+    where: { id: 'perm_reports_read' },
+    update: { key: 'REPORTS_READ', description: 'Can view reports' },
+    create: {
+      id: 'perm_reports_read',
+      key: 'REPORTS_READ',
+      description: 'Can view reports',
+    },
+  });
+
+  await prisma.permission.upsert({
+    where: { id: 'perm_users_read' },
+    update: { key: 'USERS_READ', description: 'Can view users' },
+    create: {
+      id: 'perm_users_read',
+      key: 'USERS_READ',
+      description: 'Can view users',
+    },
+  });
+
+  await prisma.permission.upsert({
+    where: { id: 'perm_users_edit' },
+    update: { key: 'USERS_EDIT', description: 'Can edit users' },
+    create: {
+      id: 'perm_users_edit',
+      key: 'USERS_EDIT',
+      description: 'Can edit users',
+    },
+  });
+
   const allPermissions = await prisma.permission.findMany({
     select: { id: true },
   });

@@ -16,3 +16,13 @@ export const formatDate = (date: Date | string | number) => {
 
   return `${day}/${month}/${year}`;
 };
+
+/**
+ * Formats a number as COP currency.
+ */
+export const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    maximumFractionDigits: 0,
+  }).format(value);
