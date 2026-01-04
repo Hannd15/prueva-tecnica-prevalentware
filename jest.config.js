@@ -11,6 +11,9 @@ const customJestConfig = {
     '^@/(.*)$': '<rootDir>/$1',
   },
   testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+  transformIgnorePatterns: [
+    '/node_modules/(?!(better-auth)/)',
+  ],
 };
 
 module.exports = createJestConfig(customJestConfig);
