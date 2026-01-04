@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { MovementType } from '@prisma/client';
 
 import { getServerSession } from '@/lib/auth/server';
 import { prisma } from '@/lib/db';
@@ -10,6 +11,7 @@ type MovementListItem = {
   concept: string;
   amount: number;
   date: string;
+  type: MovementType;
   user: {
     id: string;
     name: string;
@@ -54,6 +56,7 @@ const toMovementListItem = (movement: {
   concept: string;
   amount: number;
   date: Date;
+  type: MovementType;
   user: { id: string; name: string; email: string } | null;
 }): MovementListItem => {
   const { user } = movement;
@@ -63,6 +66,7 @@ const toMovementListItem = (movement: {
       concept: movement.concept,
       amount: movement.amount,
       date: movement.date.toISOString(),
+      type: movement.type,
       user: null,
     };
   }
@@ -72,6 +76,7 @@ const toMovementListItem = (movement: {
     concept: movement.concept,
     amount: movement.amount,
     date: movement.date.toISOString(),
+    type: movement.type,
     user: {
       id: user.id,
       name: user.name,
@@ -100,17 +105,22 @@ const handlePost = async (
   const concept =
     typeof req.body?.concept === 'string' ? req.body.concept.trim() : '';
   const date = parseDate(req.body?.date);
+  const type = req.body?.type as MovementType | undefined;
 
   if (!concept) return res.status(400).json({ error: 'Concepto es requerido' });
   if (amount === null)
     return res.status(400).json({ error: 'Monto es inválido' });
   if (!date) return res.status(400).json({ error: 'Fecha es inválida' });
+  if (!type || !Object.values(MovementType).includes(type)) {
+    return res.status(400).json({ error: 'Tipo es inválido' });
+  }
 
   const movement = await prisma.movement.create({
     data: {
       concept,
       amount,
       date,
+      type,
       userId,
     },
     include: { user: userSelect },

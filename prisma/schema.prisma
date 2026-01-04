@@ -68,18 +68,24 @@ model User {
 }
 
 model Movement {
-  id        String   @id @default(cuid())
+  id        String       @id @default(cuid())
   concept   String
   amount    Float
   date      DateTime
+  type      MovementType
   userId    String?
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  user      User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 
   @@index([userId])
   @@index([date])
   @@map("movement")
+}
+
+enum MovementType {
+  INCOME
+  EXPENSE
 }
 
 model Session {

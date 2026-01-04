@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { MovementType } from '@prisma/client';
 
 import { usePermissions } from '@/lib/rbac/client';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
@@ -16,6 +17,7 @@ type MovementListItem = {
   concept: string;
   amount: number;
   date: string;
+  type: MovementType;
   user: {
     id: string;
     name: string;
@@ -61,6 +63,21 @@ const MovementsPage = () => {
       cell: (row) => <span className='font-medium'>{row.concept}</span>,
     },
     {
+      key: 'type', // Virtual key for the type column
+      header: 'Tipo',
+      cell: (row) => (
+        <span
+          className={
+            row.type === MovementType.INCOME
+              ? 'text-green-600 font-medium'
+              : 'text-red-600 font-medium'
+          }
+        >
+          {row.type === MovementType.INCOME ? 'Ingreso' : 'Egreso'}
+        </span>
+      ),
+    },
+    {
       key: 'amount',
       header: 'Monto',
       headerClassName: 'text-right',
@@ -75,7 +92,7 @@ const MovementsPage = () => {
     {
       key: 'user',
       header: 'Usuario',
-      cell: (row) => (row.user ? `${row.user.name} (${row.user.email})` : '-'),
+      cell: (row) => (row.user ? row.user.name : '-'),
     },
   ];
 
