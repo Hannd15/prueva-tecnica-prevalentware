@@ -1,24 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MovementType } from '@prisma/client';
+
 import { getServerSession } from '@/lib/auth/server';
 import { prisma } from '@/lib/db';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
 import { getUserPermissionKeys } from '@/lib/rbac/server';
-
-type ChartDataPoint = {
-  date: string;
-  incomes: number;
-  expenses: number;
-};
-
-type ReportsStatsResponse = {
-  summary: {
-    totalIncomes: number;
-    totalExpenses: number;
-    balance: number;
-  };
-  chartData: ChartDataPoint[];
-};
+import { type ChartDataPoint, type ReportsStats } from '@/types';
 
 type ErrorResponse = {
   error: string;
@@ -26,7 +13,7 @@ type ErrorResponse = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ReportsStatsResponse | ErrorResponse>
+  res: NextApiResponse<ReportsStats | ErrorResponse>
 ) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -98,14 +85,16 @@ export default async function handler(
       a.date.localeCompare(b.date)
     );
 
-    return res.status(200).json({
+    const stats: ReportsStats = {
       summary: {
         totalIncomes,
         totalExpenses,
         balance: totalIncomes - totalExpenses,
       },
       chartData,
-    });
+    };
+
+    return res.status(200).json(stats);
   } catch {
     return res.status(500).json({ error: 'Internal server error' });
   }

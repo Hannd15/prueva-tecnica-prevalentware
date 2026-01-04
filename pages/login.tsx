@@ -1,22 +1,13 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { TitledCard } from '@/components/molecules/TitledCard';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth/client';
 
 const LoginPage = () => {
-  const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (!isPending && session) {
-      void router.replace('/');
-    }
-  }, [isPending, router, session]);
 
   const onLogin = async () => {
     setError(null);
@@ -56,7 +47,7 @@ const LoginPage = () => {
               type='button'
               className='w-full'
               onClick={onLogin}
-              disabled={isPending || isSubmitting}
+              disabled={isSubmitting}
             >
               {isSubmitting ? 'Redirigiendo…' : 'Continuar con GitHub'}
             </Button>

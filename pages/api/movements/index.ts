@@ -5,30 +5,10 @@ import { getServerSession } from '@/lib/auth/server';
 import { prisma } from '@/lib/db';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
 import { getUserPermissionKeys } from '@/lib/rbac/server';
-
-type MovementListItem = {
-  id: string;
-  concept: string;
-  amount: number;
-  date: string;
-  type: MovementType;
-  userName: string | null;
-};
-
-type PaginatedResponse<T> = {
-  data: T[];
-  meta: {
-    total: number;
-    page: number;
-    pageSize: number;
-    totalPages: number;
-  };
-  summary: {
-    totalIncomes: number;
-    totalExpenses: number;
-    balance: number;
-  };
-};
+import {
+  type MovementListItem,
+  type PaginatedMovementsResponse,
+} from '@/types';
 
 type ErrorResponse = {
   error: string;
@@ -78,46 +58,52 @@ const toMovementListItem = (movement: {
 
 const handleGet = async (
   req: NextApiRequest,
-  res: NextApiResponse<PaginatedResponse<MovementListItem> | ErrorResponse>
+  res: NextApiResponse<PaginatedMovementsResponse | ErrorResponse>
 ) => {
   const page = Math.max(1, parseNumber(req.query.page) ?? 1);
   const pageSize = Math.max(1, parseNumber(req.query.pageSize) ?? 10);
 
-  const [total, movements, summary] = await Promise.all([
-    prisma.movement.count(),
-    prisma.movement.findMany({
-      orderBy: { date: 'desc' },
-      include: { user: userSelect },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    }),
-    prisma.movement.groupBy({
-      by: ['type'],
-      _sum: {
-        amount: true,
+  try {
+    const [total, movements, summary] = await Promise.all([
+      prisma.movement.count(),
+      prisma.movement.findMany({
+        orderBy: { date: 'desc' },
+        include: { user: userSelect },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.movement.groupBy({
+        by: ['type'],
+        _sum: {
+          amount: true,
+        },
+      }),
+    ]);
+
+    const totalIncomes =
+      summary.find((s) => s.type === MovementType.INCOME)?._sum.amount ?? 0;
+    const totalExpenses =
+      summary.find((s) => s.type === MovementType.EXPENSE)?._sum.amount ?? 0;
+
+    const result: PaginatedMovementsResponse = {
+      data: movements.map(toMovementListItem),
+      meta: {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
       },
-    }),
-  ]);
+      summary: {
+        totalIncomes,
+        totalExpenses,
+        balance: totalIncomes - totalExpenses,
+      },
+    };
 
-  const totalIncomes =
-    summary.find((s) => s.type === MovementType.INCOME)?._sum.amount ?? 0;
-  const totalExpenses =
-    summary.find((s) => s.type === MovementType.EXPENSE)?._sum.amount ?? 0;
-
-  return res.status(200).json({
-    data: movements.map(toMovementListItem),
-    meta: {
-      total,
-      page,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
-    },
-    summary: {
-      totalIncomes,
-      totalExpenses,
-      balance: totalIncomes - totalExpenses,
-    },
-  });
+    return res.status(200).json(result);
+  } catch {
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 };
 
 const parseMovementBody = (body: Record<string, unknown>) => ({
@@ -185,7 +171,7 @@ const handlePost = async (
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<
-    PaginatedResponse<MovementListItem> | MovementListItem | ErrorResponse
+    PaginatedMovementsResponse | MovementListItem | ErrorResponse
   >
 ) {
   const session = await getServerSession(req);

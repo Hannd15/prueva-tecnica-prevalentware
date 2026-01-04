@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import { MovementType } from '@prisma/client';
+import { useRouter } from 'next/router';
+import { useQuery } from '@tanstack/react-query';
 
 import { usePermissions } from '@/lib/rbac/client';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
@@ -12,37 +13,31 @@ import { PageHeader } from '@/components/organisms/PageHeader';
 import { AppShell } from '@/components/templates/AppShell';
 import { Button } from '@/components/ui/button';
 import { formatDate, formatCurrency } from '@/lib/utils';
-
-type MovementListItem = {
-  id: string;
-  concept: string;
-  amount: number;
-  date: string;
-  type: MovementType;
-  userName: string | null;
-};
+import {
+  type MovementListItem,
+  type PaginatedMovementsResponse,
+} from '@/types';
 
 /**
  * Movements management page (income/expenses).
- *
- * NOTE: Authentication/RBAC intentionally skipped for now (per request).
  */
 const MovementsPage = () => {
-  const [data, setData] = useState<MovementListItem[]>([]);
-  const [meta, setMeta] = useState({
-    total: 0,
-    page: 1,
-    pageSize: 10,
-    totalPages: 0,
-  });
-  const [summary, setSummary] = useState({
-    totalIncomes: 0,
-    totalExpenses: 0,
-    balance: 0,
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const { can } = usePermissions();
+
+  const page = Number(router.query.page) || 1;
+  const pageSize = Number(router.query.pageSize) || 10;
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['movements', page, pageSize],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/movements?page=${page}&pageSize=${pageSize}`
+      );
+      if (!res.ok) throw new Error('Failed to fetch');
+      return res.json() as Promise<PaginatedMovementsResponse>;
+    },
+  });
 
   const canCreate = can(PERMISSIONS.MOVEMENTS_CREATE);
 
@@ -53,7 +48,7 @@ const MovementsPage = () => {
       cell: (row) => <span className='font-medium'>{row.concept}</span>,
     },
     {
-      key: 'type', // Virtual key for the type column
+      key: 'type',
       header: 'Tipo',
       cell: (row) => (
         <span
@@ -86,56 +81,19 @@ const MovementsPage = () => {
     },
   ];
 
-  useEffect(() => {
-    let cancelled = false;
+  const onPageChange = (page: number) => {
+    void router.push({
+      pathname: router.pathname,
+      query: { ...router.query, page },
+    });
+  };
 
-    const load = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const query = new URLSearchParams({
-          page: String(meta.page),
-          pageSize: String(meta.pageSize),
-        });
-
-        const res = await fetch(`/api/movements?${query.toString()}`, {
-          method: 'GET',
-          headers: { Accept: 'application/json' },
-        });
-
-        if (!res.ok) {
-          const body = (await res.json().catch(() => null)) as {
-            error?: string;
-          } | null;
-          throw new Error(
-            body?.error ?? `Error al cargar movimientos (${res.status})`
-          );
-        }
-
-        const json = (await res.json()) as {
-          data: MovementListItem[];
-          meta: typeof meta;
-          summary: typeof summary;
-        };
-        if (!cancelled) {
-          setData(json.data);
-          setMeta(json.meta);
-          setSummary(json.summary);
-        }
-      } catch (e) {
-        if (!cancelled)
-          setError(e instanceof Error ? e.message : 'Error desconocido');
-      } finally {
-        if (!cancelled) setIsLoading(false);
-      }
-    };
-
-    void load();
-    return () => {
-      cancelled = true;
-    };
-  }, [meta.page, meta.pageSize]);
+  const onPageSizeChange = (pageSize: number) => {
+    void router.push({
+      pathname: router.pathname,
+      query: { ...router.query, pageSize, page: 1 },
+    });
+  };
 
   return (
     <AppShell
@@ -158,28 +116,32 @@ const MovementsPage = () => {
           ) : null
         }
         columns={columns}
-        rows={data}
+        rows={data?.data ?? []}
         getRowKey={(row) => row.id}
         isLoading={isLoading}
-        error={error}
         emptyMessage='No hay movimientos aún.'
-        pagination={{
-          ...meta,
-          onPageChange: (page) => setMeta((prev) => ({ ...prev, page })),
-          onPageSizeChange: (pageSize) =>
-            setMeta((prev) => ({ ...prev, pageSize, page: 1 })),
-        }}
-        footer={
-          <div className='flex items-center gap-2 text-lg font-bold'>
-            <span>Total:</span>
-            <span
-              className={
-                summary.balance >= 0 ? 'text-green-600' : 'text-red-600'
+        pagination={
+          data
+            ? {
+                ...data.meta,
+                onPageChange,
+                onPageSizeChange,
               }
-            >
-              {isLoading ? '...' : formatCurrency(summary.balance)}
-            </span>
-          </div>
+            : undefined
+        }
+        footer={
+          data ? (
+            <div className='flex items-center gap-2 text-lg font-bold'>
+              <span>Total:</span>
+              <span
+                className={
+                  data.summary.balance >= 0 ? 'text-green-600' : 'text-red-600'
+                }
+              >
+                {formatCurrency(data.summary.balance)}
+              </span>
+            </div>
+          ) : null
         }
         className='flex-1 min-h-0'
       />
