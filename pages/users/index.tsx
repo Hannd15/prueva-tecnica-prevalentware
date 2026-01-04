@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Edit } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import {
   DataTable,
@@ -10,26 +11,21 @@ import { PageHeader } from '@/components/organisms/PageHeader';
 import { AppShell } from '@/components/templates/AppShell';
 import { Button } from '@/components/ui/button';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
+import { type PaginatedUsersResponse, type UserWithRole } from '@/types';
 
 import { NextPageAuth } from '@/pages/_app';
 
-type UserWithRole = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  role: {
-    name: string;
-  };
-};
-
 const UsersPage = () => {
-  const { data: users, isLoading } = useQuery({
-    queryKey: ['users'],
+  const router = useRouter();
+  const page = Number(router.query.page) || 1;
+  const pageSize = Number(router.query.pageSize) || 10;
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['users', page, pageSize],
     queryFn: async () => {
-      const res = await fetch('/api/users');
+      const res = await fetch(`/api/users?page=${page}&pageSize=${pageSize}`);
       if (!res.ok) throw new Error('Failed to fetch users');
-      return res.json() as Promise<UserWithRole[]>;
+      return res.json() as Promise<PaginatedUsersResponse>;
     },
   });
 
@@ -52,7 +48,7 @@ const UsersPage = () => {
     {
       key: 'role',
       header: 'Rol',
-      cell: (row) => row.role.name,
+      cell: (row) => row.roleName,
     },
     {
       key: 'actions',
@@ -60,7 +56,7 @@ const UsersPage = () => {
       headerClassName: 'text-right',
       className: 'text-right',
       cell: (row) => (
-        <Button variant='ghost' size='icon' asChild>
+        <Button variant='ghost' size='icon' className='h-8 w-8' asChild>
           <Link href={`/users/${row.id}`}>
             <Edit className='h-4 w-4' />
           </Link>
@@ -68,6 +64,20 @@ const UsersPage = () => {
       ),
     },
   ];
+
+  const onPageChange = (page: number) => {
+    void router.push({
+      pathname: router.pathname,
+      query: { ...router.query, page },
+    });
+  };
+
+  const onPageSizeChange = (pageSize: number) => {
+    void router.push({
+      pathname: router.pathname,
+      query: { ...router.query, pageSize, page: 1 },
+    });
+  };
 
   return (
     <AppShell pageTitle='Gestión de usuarios' contentClassName='space-y-6'>
@@ -80,10 +90,20 @@ const UsersPage = () => {
         title='Usuarios'
         description='Listado de usuarios registrados en la plataforma.'
         columns={columns}
-        rows={users ?? []}
+        rows={data?.data ?? []}
         getRowKey={(row) => row.id}
         isLoading={isLoading}
         emptyMessage='No hay usuarios registrados.'
+        pagination={
+          data
+            ? {
+                ...data.meta,
+                onPageChange,
+                onPageSizeChange,
+              }
+            : undefined
+        }
+        className='flex-1 min-h-0'
       />
     </AppShell>
   );

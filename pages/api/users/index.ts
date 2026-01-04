@@ -3,12 +3,33 @@ import { getServerSession } from '@/lib/auth/server';
 import { prisma } from '@/lib/db';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
 import { getUserPermissionKeys } from '@/lib/rbac/server';
+import { PaginatedUsersResponse } from '@/types';
+
+const parseNumber = (value: unknown): number | null => {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return null;
+};
 
 /**
  * @openapi
  * /api/users:
  *   get:
- *     summary: Get all users
+ *     summary: Get all users (paginated)
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *           default: 10
  *     responses:
  *       200:
  *         description: List of users
@@ -32,13 +53,38 @@ export default async function handler(
   }
 
   if (req.method === 'GET') {
-    const users = await prisma.user.findMany({
-      include: {
-        role: true,
+    const page = Math.max(1, parseNumber(req.query.page) ?? 1);
+    const pageSize = Math.max(1, parseNumber(req.query.pageSize) ?? 10);
+
+    const [total, users] = await Promise.all([
+      prisma.user.count(),
+      prisma.user.findMany({
+        include: {
+          role: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+    ]);
+
+    const response: PaginatedUsersResponse = {
+      data: users.map((u) => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        phone: u.phone,
+        roleName: u.role.name,
+      })),
+      meta: {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
       },
-      orderBy: { createdAt: 'desc' },
-    });
-    return res.status(200).json(users);
+    };
+
+    return res.status(200).json(response);
   }
 
   res.setHeader('Allow', ['GET']);

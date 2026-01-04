@@ -38,3 +38,21 @@ export type ReportsStats = {
   };
   chartData: ChartDataPoint[];
 };
+
+export type UserWithRole = {
+  id: string;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  roleName: string;
+};
+
+export type PaginatedUsersResponse = {
+  data: UserWithRole[];
+  meta: {
+    total: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+  };
+};
