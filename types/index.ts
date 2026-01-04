@@ -69,3 +69,10 @@ export type UserDetail = {
   phone: string | null;
   roleId: string;
 };
+
+export type HomeAction = {
+  title: string;
+  description: string;
+  href: string;
+  permission: string;
+};
