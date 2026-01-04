@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+import { getServerSession } from '@/lib/auth/server';
 import { prisma } from '@/lib/db';
+import { PERMISSIONS } from '@/lib/rbac/permissions';
+import { getUserPermissionKeys } from '@/lib/rbac/server';
 
 type MovementListItem = {
   id: string;
@@ -90,7 +93,8 @@ const handleGet = async (
 
 const handlePost = async (
   req: NextApiRequest,
-  res: NextApiResponse<MovementListItem | ErrorResponse>
+  res: NextApiResponse<MovementListItem | ErrorResponse>,
+  userId: string
 ) => {
   const amount = parseNumber(req.body?.amount);
   const concept =
@@ -107,7 +111,7 @@ const handlePost = async (
       concept,
       amount,
       date,
-      // No user assignment while auth is disabled.
+      userId,
     },
     include: { user: userSelect },
   });
@@ -118,17 +122,31 @@ const handlePost = async (
 /**
  * Movements API.
  *
- * NOTE: Authentication and RBAC are intentionally skipped for now (per request).
  */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<MovementListItem[] | MovementListItem | ErrorResponse>
 ) {
+  const session = await getServerSession(req);
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthenticated' });
+  }
+
+  const permissions = await getUserPermissionKeys(userId);
+
   switch (req.method) {
     case 'GET':
+      if (!permissions.includes(PERMISSIONS.MOVEMENTS_READ)) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
       return handleGet(res);
     case 'POST':
-      return handlePost(req, res);
+      if (!permissions.includes(PERMISSIONS.MOVEMENTS_CREATE)) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+      return handlePost(req, res, userId);
     default:
       res.setHeader('Allow', ['GET', 'POST']);
       return res

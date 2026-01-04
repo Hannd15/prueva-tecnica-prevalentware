@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+import { usePermissions } from '@/lib/rbac/client';
+import { PERMISSIONS } from '@/lib/rbac/permissions';
 import {
   DataTable,
   type DataTableColumn,
@@ -48,6 +50,9 @@ const MovementsPage = () => {
   const [data, setData] = useState<MovementListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { can } = usePermissions();
+
+  const canCreate = can(PERMISSIONS.MOVEMENTS_CREATE);
 
   const columns: Array<DataTableColumn<MovementListItem>> = [
     {
@@ -123,9 +128,11 @@ const MovementsPage = () => {
         title='Movimientos'
         description='Listado de ingresos y egresos registrados.'
         actions={
-          <Button asChild>
-            <Link href='/movements/new'>Nuevo</Link>
-          </Button>
+          canCreate ? (
+            <Button asChild>
+              <Link href='/movements/new'>Nuevo</Link>
+            </Button>
+          ) : null
         }
         columns={columns}
         rows={data}
@@ -137,5 +144,9 @@ const MovementsPage = () => {
     </AppShell>
   );
 };
+
+(
+  MovementsPage as typeof MovementsPage & { requiredPermissions?: string[] }
+).requiredPermissions = [PERMISSIONS.MOVEMENTS_READ];
 
 export default MovementsPage;

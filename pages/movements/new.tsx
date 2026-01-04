@@ -6,6 +6,7 @@ import { TitledCard } from '@/components/molecules/TitledCard';
 import { PageHeader } from '@/components/organisms/PageHeader';
 import { AppShell } from '@/components/templates/AppShell';
 import { Button } from '@/components/ui/button';
+import { PERMISSIONS } from '@/lib/rbac/permissions';
 
 type ApiError = { error: string };
 
@@ -118,5 +119,9 @@ const NewMovementPage = () => {
     </AppShell>
   );
 };
+
+(
+  NewMovementPage as typeof NewMovementPage & { requiredPermissions?: string[] }
+).requiredPermissions = [PERMISSIONS.MOVEMENTS_CREATE];
 
 export default NewMovementPage;
