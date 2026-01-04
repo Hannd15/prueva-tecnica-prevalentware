@@ -4,6 +4,7 @@ import { MovementType } from '@prisma/client';
 
 import { LabeledInput } from '@/components/molecules/LabeledInput';
 import { LabeledSelect } from '@/components/molecules/LabeledSelect';
+import { LabeledDatePicker } from '@/components/molecules/LabeledDatePicker';
 import { TitledCard } from '@/components/molecules/TitledCard';
 import { PageHeader } from '@/components/organisms/PageHeader';
 import { AppShell } from '@/components/templates/AppShell';
@@ -22,9 +23,7 @@ const NewMovementPage = () => {
 
   const [amount, setAmount] = useState<string>('');
   const [concept, setConcept] = useState<string>('');
-  const [date, setDate] = useState<string>(
-    new Date().toISOString().split('T')[0]
-  );
+  const [date, setDate] = useState<Date | undefined>(new Date());
   const [type, setType] = useState<MovementType>(MovementType.INCOME);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +40,12 @@ const NewMovementPage = () => {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify({ amount, concept, date, type }),
+        body: JSON.stringify({
+          amount,
+          concept,
+          date: date ? date.toISOString().split('T')[0] : null,
+          type,
+        }),
       });
 
       if (!res.ok) {
@@ -104,15 +108,12 @@ const NewMovementPage = () => {
             required
           />
 
-          <LabeledInput
+          <LabeledDatePicker
             label='Fecha'
             id='date'
-            name='date'
-            type='date'
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
+            date={date}
+            setDate={setDate}
             disabled={isSubmitting}
-            required
           />
 
           {error ? (
