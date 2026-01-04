@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 
+import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
@@ -12,6 +13,12 @@ import { cn } from '@/lib/utils';
 export type AppShellProps = {
   children: ReactNode;
   className?: string;
+  /**
+   * Document title for the current page.
+   *
+   * AppShell will append " | Prueba Técnica".
+   */
+  pageTitle?: string;
   /**
    * Optional override for the main content wrapper.
    *
@@ -29,17 +36,26 @@ export type AppShellProps = {
 export const AppShell = ({
   children,
   className,
+  pageTitle,
   contentClassName,
 }: AppShellProps) => (
-  <div className={cn('min-h-screen bg-background', className)}>
-    <div className='flex min-h-screen'>
-      <AppSidebar />
-      <main className='flex-1 p-12'>
-        <AppShellHeader />
-        <div className={cn('space-y-10', contentClassName)}>{children}</div>
-      </main>
+  <>
+    <Head>
+      <title>
+        {pageTitle ? `${pageTitle} | Prueba Técnica` : 'Prueba Técnica'}
+      </title>
+    </Head>
+
+    <div className={cn('min-h-screen bg-background', className)}>
+      <div className='flex min-h-screen'>
+        <AppSidebar />
+        <main className='flex-1 p-12'>
+          <AppShellHeader />
+          <div className={cn('space-y-10', contentClassName)}>{children}</div>
+        </main>
+      </div>
     </div>
-  </div>
+  </>
 );
 
 const AppShellHeader = () => {

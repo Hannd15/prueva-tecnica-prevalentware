@@ -1,17 +1,11 @@
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
+import { LabeledInput } from '@/components/molecules/LabeledInput';
+import { TitledCard } from '@/components/molecules/TitledCard';
 import { PageHeader } from '@/components/organisms/PageHeader';
 import { AppShell } from '@/components/templates/AppShell';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 
 type ApiError = { error: string };
 
@@ -58,92 +52,70 @@ const NewMovementPage = () => {
   };
 
   return (
-    <>
-      <Head>
-        <title>Nuevo movimiento | Prueba Técnica</title>
-      </Head>
+    <AppShell pageTitle='Nuevo movimiento' contentClassName='space-y-6'>
+      <PageHeader
+        title='Nuevo movimiento'
+        subtitle='Registra un ingreso o egreso.'
+      />
 
-      <AppShell contentClassName='space-y-6'>
-        <PageHeader
-          title='Nuevo movimiento'
-          subtitle='Registra un ingreso o egreso.'
-        />
+      <TitledCard
+        title='Formulario'
+        description='Completa los datos del movimiento.'
+      >
+        <form onSubmit={onSubmit} className='space-y-4'>
+          <LabeledInput
+            label='Monto'
+            id='amount'
+            name='amount'
+            inputMode='decimal'
+            placeholder='100000'
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            disabled={isSubmitting}
+            required
+          />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Formulario</CardTitle>
-            <CardDescription>
-              Completa los datos del movimiento.
-            </CardDescription>
-          </CardHeader>
+          <LabeledInput
+            label='Concepto'
+            id='concept'
+            name='concept'
+            placeholder='Pago de servicios'
+            value={concept}
+            onChange={(e) => setConcept(e.target.value)}
+            disabled={isSubmitting}
+            required
+          />
 
-          <form onSubmit={onSubmit} className='space-y-4 px-6 pb-6'>
-            <div className='space-y-2'>
-              <label className='text-sm font-medium' htmlFor='amount'>
-                Monto
-              </label>
-              <Input
-                id='amount'
-                name='amount'
-                inputMode='decimal'
-                placeholder='100000'
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                disabled={isSubmitting}
-                required
-              />
-            </div>
+          <LabeledInput
+            label='Fecha'
+            id='date'
+            name='date'
+            type='date'
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            disabled={isSubmitting}
+            required
+          />
 
-            <div className='space-y-2'>
-              <label className='text-sm font-medium' htmlFor='concept'>
-                Concepto
-              </label>
-              <Input
-                id='concept'
-                name='concept'
-                placeholder='Pago de servicios'
-                value={concept}
-                onChange={(e) => setConcept(e.target.value)}
-                disabled={isSubmitting}
-                required
-              />
-            </div>
+          {error ? (
+            <div className='text-sm text-destructive'>{error}</div>
+          ) : null}
 
-            <div className='space-y-2'>
-              <label className='text-sm font-medium' htmlFor='date'>
-                Fecha
-              </label>
-              <Input
-                id='date'
-                name='date'
-                type='date'
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                disabled={isSubmitting}
-                required
-              />
-            </div>
-
-            {error ? (
-              <div className='text-sm text-destructive'>{error}</div>
-            ) : null}
-
-            <div className='flex gap-3'>
-              <Button type='submit' disabled={isSubmitting}>
-                {isSubmitting ? 'Guardando...' : 'Guardar'}
-              </Button>
-              <Button
-                type='button'
-                variant='secondary'
-                onClick={() => router.push('/movements')}
-              >
-                Cancelar
-              </Button>
-            </div>
-          </form>
-        </Card>
-      </AppShell>
-    </>
+          <div className='flex gap-3'>
+            <Button type='submit' disabled={isSubmitting}>
+              {isSubmitting ? 'Guardando...' : 'Guardar'}
+            </Button>
+            <Button
+              type='button'
+              variant='secondary'
+              onClick={() => router.push('/movements')}
+            >
+              Cancelar
+            </Button>
+          </div>
+        </form>
+      </TitledCard>
+    </AppShell>
   );
 };
 

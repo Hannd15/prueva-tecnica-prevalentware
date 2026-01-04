@@ -2,13 +2,8 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
+import { TitledCard } from '@/components/molecules/TitledCard';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { authClient } from '@/lib/auth/client';
 
 const LoginPage = () => {
@@ -47,29 +42,25 @@ const LoginPage = () => {
 
       <div className='min-h-screen bg-background p-12'>
         <div className='mx-auto flex min-h-[calc(100vh-6rem)] max-w-md items-center'>
-          <Card className='w-full'>
-            <CardHeader>
-              <CardTitle>Iniciar sesión</CardTitle>
-              <CardDescription>
-                Accede usando tu cuenta de GitHub.
-              </CardDescription>
-            </CardHeader>
+          <TitledCard
+            className='w-full'
+            title='Iniciar sesión'
+            description='Accede usando tu cuenta de GitHub.'
+            contentClassName='space-y-4'
+          >
+            {error ? (
+              <div className='text-sm text-destructive'>{error}</div>
+            ) : null}
 
-            <div className='space-y-4 px-6 pb-6'>
-              {error ? (
-                <div className='text-sm text-destructive'>{error}</div>
-              ) : null}
-
-              <Button
-                type='button'
-                className='w-full'
-                onClick={onLogin}
-                disabled={isPending || isSubmitting}
-              >
-                {isSubmitting ? 'Redirigiendo…' : 'Continuar con GitHub'}
-              </Button>
-            </div>
-          </Card>
+            <Button
+              type='button'
+              className='w-full'
+              onClick={onLogin}
+              disabled={isPending || isSubmitting}
+            >
+              {isSubmitting ? 'Redirigiendo…' : 'Continuar con GitHub'}
+            </Button>
+          </TitledCard>
         </div>
       </div>
     </>

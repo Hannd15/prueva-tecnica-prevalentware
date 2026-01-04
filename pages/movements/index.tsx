@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -114,34 +113,28 @@ const MovementsPage = () => {
   }, []);
 
   return (
-    <>
-      <Head>
-        <title>Gestión de ingresos y gastos | Prueba Técnica</title>
-      </Head>
+    <AppShell pageTitle='Gestión de ingresos y gastos'>
+      <PageHeader
+        title='Gestión de ingresos y gastos'
+        subtitle='Consulta y registra movimientos financieros.'
+      />
 
-      <AppShell>
-        <PageHeader
-          title='Gestión de ingresos y gastos'
-          subtitle='Consulta y registra movimientos financieros.'
-        />
-
-        <DataTable
-          title='Movimientos'
-          description='Listado de ingresos y egresos registrados.'
-          actions={
-            <Button asChild>
-              <Link href='/movements/new'>Nuevo</Link>
-            </Button>
-          }
-          columns={columns}
-          rows={data}
-          getRowKey={(row) => row.id}
-          isLoading={isLoading}
-          error={error}
-          emptyMessage='No hay movimientos aún.'
-        />
-      </AppShell>
-    </>
+      <DataTable
+        title='Movimientos'
+        description='Listado de ingresos y egresos registrados.'
+        actions={
+          <Button asChild>
+            <Link href='/movements/new'>Nuevo</Link>
+          </Button>
+        }
+        columns={columns}
+        rows={data}
+        getRowKey={(row) => row.id}
+        isLoading={isLoading}
+        error={error}
+        emptyMessage='No hay movimientos aún.'
+      />
+    </AppShell>
   );
 };
 
