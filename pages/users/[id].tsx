@@ -1,37 +1,19 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-import { LabeledInput } from '@/components/molecules/LabeledInput';
-import { LabeledSelect } from '@/components/molecules/LabeledSelect';
 import { TitledCard } from '@/components/molecules/TitledCard';
 import { PageHeader } from '@/components/organisms/PageHeader';
+import { UserEditForm } from '@/components/organisms/UserEditForm';
 import { AppShell } from '@/components/templates/AppShell';
-import { Button } from '@/components/ui/button';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
 import { NextPageAuth } from '@/pages/_app';
-
-type Role = {
-  id: string;
-  name: string;
-};
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  roleId: string;
-};
+import { Role, UserDetail } from '@/types';
 
 const EditUserPage = () => {
   const router = useRouter();
   const { id } = router.query;
   const queryClient = useQueryClient();
-
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [roleId, setRoleId] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const { data: user, isLoading: isUserLoading } = useQuery({
@@ -39,7 +21,7 @@ const EditUserPage = () => {
     queryFn: async () => {
       const res = await fetch(`/api/users/${id}`);
       if (!res.ok) throw new Error('Failed to fetch user');
-      return res.json() as Promise<User>;
+      return res.json() as Promise<UserDetail>;
     },
     enabled: !!id,
   });
@@ -52,14 +34,6 @@ const EditUserPage = () => {
       return res.json() as Promise<Role[]>;
     },
   });
-
-  useEffect(() => {
-    if (user) {
-      setName(user.name);
-      setPhone(user.phone ?? '');
-      setRoleId(user.roleId);
-    }
-  }, [user]);
 
   const mutation = useMutation({
     mutationFn: async (updatedData: {
@@ -84,11 +58,6 @@ const EditUserPage = () => {
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    mutation.mutate({ name, phone, roleId });
-  };
-
   if (isUserLoading || isRolesLoading) {
     return (
       <AppShell pageTitle='Editar usuario'>
@@ -97,57 +66,27 @@ const EditUserPage = () => {
     );
   }
 
+  if (!user || !roles) return null;
+
   return (
     <AppShell pageTitle='Editar usuario' contentClassName='space-y-6'>
       <PageHeader
         title='Editar usuario'
-        subtitle={`Modifica los datos de ${user?.email}`}
+        subtitle={`Modifica los datos de ${user.email}`}
       />
 
       <TitledCard
         title='Datos del usuario'
         description='Actualiza el nombre, teléfono y rol del usuario.'
       >
-        <form onSubmit={handleSubmit} className='space-y-4'>
-          <LabeledInput
-            label='Nombre'
-            id='name'
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-
-          <LabeledInput
-            label='Teléfono'
-            id='phone'
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder='Ej: +57 300 123 4567'
-          />
-
-          <LabeledSelect
-            label='Rol'
-            id='role'
-            value={roleId}
-            onValueChange={setRoleId}
-            options={roles?.map((r) => ({ value: r.id, label: r.name })) ?? []}
-          />
-
-          {error && <p className='text-sm text-destructive'>{error}</p>}
-
-          <div className='flex gap-3'>
-            <Button type='submit' disabled={mutation.isPending}>
-              {mutation.isPending ? 'Guardando...' : 'Guardar cambios'}
-            </Button>
-            <Button
-              type='button'
-              variant='secondary'
-              onClick={() => router.push('/users')}
-            >
-              Cancelar
-            </Button>
-          </div>
-        </form>
+        <UserEditForm
+          user={user}
+          roles={roles}
+          onSave={(data) => mutation.mutate(data)}
+          onCancel={() => router.push('/users')}
+          isSaving={mutation.isPending}
+          error={error}
+        />
       </TitledCard>
     </AppShell>
   );

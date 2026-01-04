@@ -3,10 +3,11 @@ import { getServerSession } from '@/lib/auth/server';
 import { prisma } from '@/lib/db';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
 import { getUserPermissionKeys } from '@/lib/rbac/server';
+import { Role } from '@/types';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<Role[] | { error: string }>
 ) {
   const session = await getServerSession(req);
   if (!session) {

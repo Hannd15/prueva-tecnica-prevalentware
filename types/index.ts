@@ -56,3 +56,16 @@ export type PaginatedUsersResponse = {
     totalPages: number;
   };
 };
+
+export type Role = {
+  id: string;
+  name: string;
+};
+
+export type UserDetail = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  roleId: string;
+};
