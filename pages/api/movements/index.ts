@@ -32,7 +32,7 @@ const parseNumber = (value: unknown): number | null => {
 const parseDate = (value: unknown): Date | null => {
   if (typeof value !== 'string' || value.trim() === '') return null;
 
-  // Accept both "YYYY-MM-DD" and full ISO strings.
+  // Acepta tanto "YYYY-MM-DD" como strings ISO completos.
   const date =
     value.length === 10 ? new Date(`${value}T00:00:00.000Z`) : new Date(value);
   if (Number.isNaN(date.getTime())) return null;
@@ -60,7 +60,7 @@ const toMovementListItem = (movement: {
  * @openapi
  * /api/movements:
  *   get:
- *     summary: Get paginated movements
+ *     summary: Obtener movimientos (paginado)
  *     parameters:
  *       - in: query
  *         name: page
@@ -74,11 +74,11 @@ const toMovementListItem = (movement: {
  *           default: 10
  *     responses:
  *       200:
- *         description: List of movements
+ *         description: Lista de movimientos
  *       401:
- *         description: Unauthorized
+ *         description: No autenticado
  *   post:
- *     summary: Create a new movement
+ *     summary: Crear un nuevo movimiento
  *     requestBody:
  *       required: true
  *       content:
@@ -103,11 +103,11 @@ const toMovementListItem = (movement: {
  *                 enum: [INCOME, EXPENSE]
  *     responses:
  *       201:
- *         description: Movement created
+ *         description: Movimiento creado
  *       400:
- *         description: Bad request
+ *         description: Solicitud inválida
  *       401:
- *         description: Unauthorized
+ *         description: No autenticado
  */
 const handleGet = async (
   req: NextApiRequest,
@@ -218,8 +218,11 @@ const handlePost = async (
 };
 
 /**
- * Movements API.
+ * API de movimientos.
  *
+ * Protegida por sesión y permisos (RBAC):
+ * - `MOVEMENTS_READ` para listar
+ * - `MOVEMENTS_CREATE` para crear
  */
 export default async function handler(
   req: NextApiRequest,

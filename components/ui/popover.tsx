@@ -3,6 +3,12 @@ import * as PopoverPrimitive from '@radix-ui/react-popover';
 
 import { cn } from '@/lib/utils';
 
+/**
+ * Popover base (Radix + shadcn/ui).
+ *
+ * Se usa para overlays livianos (ej: selector de fecha).
+ */
+
 const Popover = PopoverPrimitive.Root;
 
 const PopoverTrigger = PopoverPrimitive.Trigger;

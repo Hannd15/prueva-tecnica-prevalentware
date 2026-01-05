@@ -5,6 +5,11 @@ import { TitledCard } from '@/components/molecules/TitledCard';
 import { Button } from '@/components/ui/button';
 import { authClient } from '@/lib/auth/client';
 
+/**
+ * Página de inicio de sesión.
+ *
+ * Inicia autenticación con GitHub usando better-auth.
+ */
 const LoginPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);

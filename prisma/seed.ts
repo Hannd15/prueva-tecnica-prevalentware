@@ -80,30 +80,10 @@ const main = async () => {
   await prisma.rolePermission.createMany({
     data: [
       { roleId: 'role_user', permissionId: 'perm_movements_read' },
-      { roleId: 'role_user', permissionId: 'perm_movements_create' },
     ],
     skipDuplicates: true,
   });
 
-  // Seed test users
-  const testUsers = Array.from({ length: 25 }).map((_, i) => ({
-    id: `test-user-${i + 1}`,
-    name: `Test User ${i + 1}`,
-    email: `user${i + 1}@example.com`,
-    emailVerified: true,
-    roleId: i % 5 === 0 ? 'role_admin' : 'role_user', // Every 5th user is an admin
-    createdAt: new Date(Date.now() - i * 3600000), // Spread out creation times
-    updatedAt: new Date(),
-  }));
-
-  for (const user of testUsers) {
-    await prisma.user.upsert({
-      where: { email: user.email },
-      update: {},
-      create: user,
-    });
-  }
-};
 
 main()
   .catch((e) => {

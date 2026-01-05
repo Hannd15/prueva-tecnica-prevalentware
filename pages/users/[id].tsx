@@ -10,6 +10,12 @@ import { PERMISSIONS } from '@/lib/rbac/permissions';
 import { NextPageAuth } from '@/pages/_app';
 import { Role, UserDetail } from '@/types';
 
+/**
+ * Página de edición de usuario.
+ *
+ * Carga el usuario y los roles, y permite actualizar nombre/teléfono/rol.
+ * Requiere permiso `USERS_EDIT`.
+ */
 const EditUserPage = () => {
   const router = useRouter();
   const { id } = router.query;

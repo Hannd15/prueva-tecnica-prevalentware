@@ -2,6 +2,13 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
+/**
+ * Primitivas de tabla (basadas en shadcn/ui).
+ *
+ * Nota de diseño: se estandariza la altura de fila (`h-12` = 48px) para que
+ * todas las tablas de la app tengan consistencia visual.
+ */
+
 const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement> & { containerClassName?: string }

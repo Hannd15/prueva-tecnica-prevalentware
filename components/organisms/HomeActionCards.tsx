@@ -27,9 +27,10 @@ const actions: HomeAction[] = [
 ];
 
 /**
- * Home page quick access cards.
+ * Tarjetas de acceso rápido del Home.
  *
- * Matches the wireframe: three prominent navigation cards.
+ * Coincide con el wireframe: tres tarjetas de navegación.
+ * Se filtran por permisos (RBAC) para mostrar solo opciones autorizadas.
  */
 export const HomeActionCards = () => {
   const { permissions, isLoading } = usePermissions();

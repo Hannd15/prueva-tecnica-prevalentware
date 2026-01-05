@@ -21,6 +21,11 @@ type MovementsChartProps = {
   data: ChartDataPoint[];
 };
 
+/**
+ * Gráfico de movimientos (neto) en el tiempo.
+ *
+ * Calcula `net = ingresos - egresos` y colorea las barras según el signo.
+ */
 export const MovementsChart = ({ data }: MovementsChartProps) => {
   const chartData = data.map((d) => ({
     ...d,

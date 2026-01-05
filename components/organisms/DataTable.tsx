@@ -39,11 +39,11 @@ export type DataTableProps<Row> = {
 };
 
 /**
- * Generic data table.
+ * Tabla genérica de datos.
  *
- * - Uses Shadcn Table + Card.
- * - Accepts columns/row configuration so it can be reused across features.
- * - Renders optional `actions` inside the table card header (e.g. Create button).
+ * - Usa `Table` (shadcn/ui) dentro de una `TitledCard`.
+ * - Recibe configuración de columnas/filas para reutilizarse entre módulos.
+ * - Renderiza `actions` opcionales en el header (ej: botón "Crear").
  */
 export const DataTable = <Row,>({
   title,

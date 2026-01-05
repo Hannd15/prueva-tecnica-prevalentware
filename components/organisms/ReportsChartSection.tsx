@@ -7,6 +7,11 @@ type ChartDataPoint = {
   expenses: number;
 };
 
+/**
+ * Sección de gráfico para reportes.
+ *
+ * Encapsula el contenedor y el estado de carga del gráfico de movimientos.
+ */
 export const ReportsChartSection = ({
   data,
   isLoading,

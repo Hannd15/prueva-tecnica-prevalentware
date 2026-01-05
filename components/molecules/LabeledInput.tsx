@@ -7,13 +7,18 @@ import { cn } from '@/lib/utils';
 export type LabeledInputProps = {
   label: string;
   /**
-   * id is required to associate the <label> with the input.
+   * `id` es obligatorio para asociar el `<label>` con el input.
    */
   id: string;
   containerClassName?: string;
   labelClassName?: string;
 } & ComponentProps<typeof Input>;
 
+/**
+ * Input con etiqueta.
+ *
+ * Asegura accesibilidad asociando `Label` e `Input` a través de `htmlFor`/`id`.
+ */
 export const LabeledInput = ({
   label,
   id,

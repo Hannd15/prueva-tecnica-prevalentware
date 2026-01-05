@@ -9,6 +9,11 @@ type ResponseBody =
       error: string;
     };
 
+/**
+ * Devuelve el listado de permisos (RBAC) del usuario autenticado.
+ *
+ * Se usa desde el cliente para ocultar/mostrar secciones y validar accesos.
+ */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseBody>

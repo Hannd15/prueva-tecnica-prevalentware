@@ -4,6 +4,12 @@ import { Check, ChevronDown, ChevronUp } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
+/**
+ * Primitivas de Select (Radix + shadcn/ui).
+ *
+ * Exponen wrappers tipados y estilizados para uso consistente en formularios.
+ */
+
 const Select = SelectPrimitive.Root;
 
 const SelectGroup = SelectPrimitive.Group;

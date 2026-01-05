@@ -10,6 +10,12 @@ import { Button } from '@/components/ui/button';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
 import { type ReportsStats } from '@/types';
 
+/**
+ * Página de reportes.
+ *
+ * Consulta estadísticas agregadas y permite exportar movimientos en CSV.
+ * Requiere permiso `REPORTS_READ`.
+ */
 const ReportsPage = () => {
   const [isExporting, setIsExporting] = useState(false);
 

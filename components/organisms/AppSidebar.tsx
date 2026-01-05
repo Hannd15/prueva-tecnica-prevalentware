@@ -7,9 +7,10 @@ export type AppSidebarProps = {
 };
 
 /**
- * Main application sidebar.
+ * Sidebar principal de la aplicación.
  *
- * Contains primary navigation used across all pages.
+ * Contiene la navegación primaria y oculta enlaces según permisos (RBAC)
+ * para evitar que el usuario navegue a páginas no autorizadas.
  */
 export const AppSidebar = ({ className }: AppSidebarProps) => {
   const { permissions, isLoading } = usePermissions();

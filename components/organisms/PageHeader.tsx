@@ -10,9 +10,9 @@ export type PageHeaderProps = {
 };
 
 /**
- * Generic page header.
+ * Encabezado genérico de página.
  *
- * Used across pages to keep route components focused on composition.
+ * Se usa en distintas rutas para mantener los pages enfocados en la composición.
  */
 export const PageHeader = ({
   title,

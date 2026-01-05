@@ -3,10 +3,10 @@ import { HomeActionCards } from '@/components/organisms/HomeActionCards';
 import { AppShell } from '@/components/templates/AppShell';
 
 /**
- * Home page.
+ * Página de inicio.
  *
- * Presents top-level navigation into the three app areas.
- * Authentication/authorization will be added later.
+ * Presenta accesos a las 3 áreas principales de la aplicación.
+ * Las opciones visibles se filtran por permisos.
  */
 const Home = () => (
   <AppShell pageTitle='Home'>

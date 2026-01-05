@@ -14,9 +14,9 @@ import { PERMISSIONS } from '@/lib/rbac/permissions';
 type ApiError = { error: string };
 
 /**
- * New movement page.
+ * Página para crear un nuevo movimiento.
  *
- * NOTE: Authentication/RBAC intentionally skipped for now (per request).
+ * Requiere permiso `MOVEMENTS_CREATE`.
  */
 const NewMovementPage = () => {
   const router = useRouter();

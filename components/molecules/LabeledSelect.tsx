@@ -21,6 +21,11 @@ export type LabeledSelectProps = {
   triggerClassName?: string;
 };
 
+/**
+ * Select con etiqueta.
+ *
+ * Mantiene consistencia visual y accesibilidad para selects del formulario.
+ */
 export const LabeledSelect = ({
   label,
   id,

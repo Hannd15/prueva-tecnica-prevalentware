@@ -6,9 +6,9 @@ export type HomeHeaderProps = {
 };
 
 /**
- * Home header wrapper.
+ * Wrapper de encabezado para el Home.
  *
- * Prefer using `PageHeader` directly in new pages.
+ * En páginas nuevas, preferir usar `PageHeader` directamente.
  */
 export const HomeHeader = ({
   title = 'Bienvenido',

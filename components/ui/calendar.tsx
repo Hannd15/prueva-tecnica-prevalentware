@@ -9,6 +9,11 @@ import { DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { Button, buttonVariants } from '@/components/ui/button';
 
+/**
+ * Calendario (react-day-picker) estilizado al sistema.
+ *
+ * Se usa principalmente dentro de `Popover` como selector de fecha.
+ */
 const Calendar = ({
   className,
   classNames,
@@ -176,6 +181,7 @@ const CalendarDayButton = ({
 
   const ref = React.useRef<HTMLButtonElement>(null);
   React.useEffect(() => {
+    // Cuando el día queda "focused" por navegación del calendario, movemos el foco real.
     if (modifiers.focused) ref.current?.focus();
   }, [modifiers.focused]);
 

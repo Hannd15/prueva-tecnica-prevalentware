@@ -12,10 +12,10 @@ export type StatCardProps = {
 };
 
 /**
- * Specialized card for displaying dashboard statistics.
+ * Tarjeta especializada para mostrar métricas.
  *
- * - Supports success/destructive variants for financial data.
- * - Includes built-in loading state.
+ * - Soporta variantes para datos financieros (éxito/destructivo).
+ * - Incluye estado de carga integrado.
  */
 export const StatCard = ({
   label,

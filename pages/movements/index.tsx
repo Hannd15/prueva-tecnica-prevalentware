@@ -19,7 +19,7 @@ import {
 } from '@/types';
 
 /**
- * Movements management page (income/expenses).
+ * Página de gestión de movimientos (ingresos/egresos).
  */
 const MovementsPage = () => {
   const router = useRouter();

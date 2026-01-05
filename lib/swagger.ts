@@ -6,7 +6,7 @@ const options: swaggerJsdoc.Options = {
     info: {
       title: 'Prueba Técnica API',
       version: '1.0.0',
-      description: 'API documentation for the Fullstack Technical Test',
+      description: 'Documentación de la API para la prueba técnica Fullstack',
     },
     components: {
       securitySchemes: {
@@ -23,7 +23,7 @@ const options: swaggerJsdoc.Options = {
       },
     ],
   },
-  apis: ['./pages/api/**/*.ts'], // Path to the API docs
+  apis: ['./pages/api/**/*.ts'], // Ruta a los archivos donde viven los JSDoc OpenAPI
 };
 
 export const spec = swaggerJsdoc(options);

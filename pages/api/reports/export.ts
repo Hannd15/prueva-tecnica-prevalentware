@@ -10,19 +10,19 @@ import { formatDate } from '@/lib/utils';
  * @openapi
  * /api/reports/export:
  *   get:
- *     summary: Export movements to CSV
+ *     summary: Exportar movimientos a CSV
  *     responses:
  *       200:
- *         description: CSV file
+ *         description: Archivo CSV
  *         content:
  *           text/csv:
  *             schema:
  *               type: string
  *               format: binary
  *       401:
- *         description: Unauthorized
+ *         description: No autenticado
  *       403:
- *         description: Forbidden
+ *         description: Sin permisos
  */
 export default async function handler(
   req: NextApiRequest,
@@ -56,13 +56,13 @@ export default async function handler(
       },
     });
 
-    // CSV Header
+    // Encabezado CSV
     const headers = ['Fecha', 'Concepto', 'Tipo', 'Monto', 'Usuario'];
 
-    // CSV Rows
+    // Filas CSV
     const rows = movements.map((m) => [
       formatDate(m.date),
-      `"${m.concept.replace(/"/g, '""')}"`, // Escape quotes
+      `"${m.concept.replace(/"/g, '""')}"`, // Escapamos comillas dobles
       m.type === MovementType.INCOME ? 'Ingreso' : 'Egreso',
       m.amount.toString(),
       m.user?.name ?? '-',
@@ -73,7 +73,7 @@ export default async function handler(
       ...rows.map((row) => row.join(',')),
     ].join('\n');
 
-    // Set headers for download
+    // Headers para forzar descarga
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader(
       'Content-Disposition',

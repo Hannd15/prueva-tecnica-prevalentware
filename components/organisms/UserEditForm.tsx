@@ -14,6 +14,12 @@ interface UserEditFormProps {
   error: string | null;
 }
 
+/**
+ * Formulario de edición de usuario.
+ *
+ * Inicializa su estado con el usuario recibido y emite el payload mínimo
+ * para actualizar (nombre/teléfono/rol).
+ */
 export const UserEditForm = ({
   user,
   roles,

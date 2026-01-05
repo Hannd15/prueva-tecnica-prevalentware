@@ -11,9 +11,10 @@ export type NavButtonLinkProps = {
 };
 
 /**
- * Sidebar navigation button.
+ * Botón de navegación del sidebar.
  *
- * Uses a Shadcn Button styled as a full-width link.
+ * Renderiza un `Button` (shadcn/ui) como enlace de ancho completo y marca
+ * el estado activo comparando el `pathname` actual con el `href`.
  */
 export const NavButtonLink = ({
   href,

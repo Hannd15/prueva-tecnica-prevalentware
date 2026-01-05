@@ -9,7 +9,7 @@ import { UserDetail } from '@/types';
  * @openapi
  * /api/users/{id}:
  *   get:
- *     summary: Get user by ID
+ *     summary: Obtener usuario por ID
  *     parameters:
  *       - in: path
  *         name: id
@@ -18,11 +18,11 @@ import { UserDetail } from '@/types';
  *           type: string
  *     responses:
  *       200:
- *         description: User details
+ *         description: Detalle del usuario
  *       404:
- *         description: User not found
+ *         description: Usuario no encontrado
  *   patch:
- *     summary: Update user
+ *     summary: Actualizar usuario
  *     parameters:
  *       - in: path
  *         name: id
@@ -44,14 +44,15 @@ import { UserDetail } from '@/types';
  *                 type: string
  *     responses:
  *       200:
- *         description: User updated
+ *         description: Usuario actualizado
  *       400:
- *         description: Bad request
+ *         description: Solicitud inválida
  */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<UserDetail | { error: string }>
 ) {
+  // Endpoint protegido: requiere sesión y permiso `USERS_EDIT`.
   const session = await getServerSession(req);
   if (!session) {
     return res.status(401).json({ error: 'Unauthorized' });

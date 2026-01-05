@@ -1,5 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
+/**
+ * UI de documentación (Swagger).
+ *
+ * Sirve una página HTML que carga Swagger UI apuntando a `/api/docs/openapi`.
+ */
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const html = `
     <!DOCTYPE html>

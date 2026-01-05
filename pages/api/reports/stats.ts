@@ -15,14 +15,14 @@ type ErrorResponse = {
  * @openapi
  * /api/reports/stats:
  *   get:
- *     summary: Get financial statistics and chart data
+ *     summary: Obtener estadísticas financieras y datos para el gráfico
  *     responses:
  *       200:
- *         description: Statistics data
+ *         description: Datos de estadísticas
  *       401:
- *         description: Unauthorized
+ *         description: No autenticado
  *       403:
- *         description: Forbidden
+ *         description: Sin permisos
  */
 export default async function handler(
   req: NextApiRequest,
@@ -43,7 +43,7 @@ export default async function handler(
   }
 
   try {
-    // 1. Get Summary Totals
+    // 1) Totales agregados (ingresos/egresos)
     const summary = await prisma.movement.groupBy({
       by: ['type'],
       _sum: {
@@ -56,7 +56,7 @@ export default async function handler(
     const totalExpenses =
       summary.find((s) => s.type === MovementType.EXPENSE)?._sum.amount ?? 0;
 
-    // 2. Get Chart Data (Last 30 days)
+    // 2) Datos del gráfico (últimos 30 días)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -71,10 +71,10 @@ export default async function handler(
       },
     });
 
-    // Group by date in JS for simplicity and cross-DB compatibility
+    // Agrupamos por fecha en JS por simplicidad y compatibilidad entre DBs.
     const chartDataMap = new Map<string, ChartDataPoint>();
 
-    // Initialize last 30 days
+    // Inicializamos los últimos 30 días para que el gráfico no tenga huecos.
     for (let i = 0; i <= 30; i++) {
       const d = new Date();
       d.setDate(d.getDate() - i);

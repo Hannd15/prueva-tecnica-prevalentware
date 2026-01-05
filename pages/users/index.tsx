@@ -15,6 +15,11 @@ import { type PaginatedUsersResponse, type UserWithRole } from '@/types';
 
 import { NextPageAuth } from '@/pages/_app';
 
+/**
+ * Página de gestión de usuarios.
+ *
+ * Lista usuarios de forma paginada. Requiere permiso `USERS_READ`.
+ */
 const UsersPage = () => {
   const router = useRouter();
   const page = Number(router.query.page) || 1;

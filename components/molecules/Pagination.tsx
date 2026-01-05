@@ -21,9 +21,9 @@ export type PaginationProps = {
 };
 
 /**
- * Reusable pagination molecule.
+ * Paginación reutilizable.
  *
- * Combines page size selection and navigation controls.
+ * Combina selección de tamaño de página y controles de navegación.
  */
 export const Pagination = ({
   page,

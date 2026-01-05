@@ -10,6 +10,11 @@ type ReportsStats = {
   };
 };
 
+/**
+ * Grid de métricas principales de reportes.
+ *
+ * Muestra ingresos, egresos y saldo; soporta estado de carga.
+ */
 export const ReportsStatsGrid = ({
   data,
   isLoading,

@@ -21,6 +21,12 @@ type AppPropsWithAuth = AppProps & {
 
 const isPublicPath = (pathname: string) => pathname === '/login';
 
+/**
+ * Guard de autenticación/autorización.
+ *
+ * - Bloquea contenido privado si no hay sesión.
+ * - Si la página declara `requiredPermissions`, valida RBAC antes de renderizar.
+ */
 const AuthGuard = ({
   children,
   requiredPermissions,
@@ -74,6 +80,7 @@ const handlePublicPathRedirect = (
   ctx: AppContext['ctx'],
   isLoggedIn: boolean
 ) => {
+  // Si el usuario ya inició sesión, no debería volver a /login.
   if (isLoggedIn) {
     ctx.res?.writeHead(302, { Location: '/' });
     ctx.res?.end();
@@ -84,6 +91,7 @@ const handlePrivatePathRedirect = (
   ctx: AppContext['ctx'],
   isLoggedIn: boolean
 ) => {
+  // Si no hay sesión, forzamos redirección a /login para rutas privadas.
   if (!isLoggedIn) {
     ctx.res?.writeHead(302, { Location: '/login' });
     ctx.res?.end();
@@ -95,6 +103,7 @@ const handlePermissionRedirect = async (
   userId: string,
   required?: string[]
 ) => {
+  // Validación RBAC en servidor para evitar que se acceda a páginas sin permiso.
   if (required?.length) {
     const permissions = await getUserPermissionKeys(userId);
     if (!hasAllPermissions(permissions, required)) {

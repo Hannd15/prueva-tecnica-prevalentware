@@ -14,24 +14,24 @@ export type AppShellProps = {
   children: ReactNode;
   className?: string;
   /**
-   * Document title for the current page.
+   * Título del documento para la página actual.
    *
-   * AppShell will append " | Prueba Técnica".
+   * AppShell agrega el sufijo " | Prueba Técnica".
    */
   pageTitle?: string;
   /**
-   * Optional override for the main content wrapper.
+   * Override opcional para el contenedor del contenido principal.
    *
-   * AppShell applies a default vertical rhythm (space between sections) so
-   * individual pages don't need to repeat spacing utilities.
+   * AppShell aplica un ritmo vertical por defecto (espaciado entre secciones)
+   * para que las páginas no tengan que repetir utilidades de spacing.
    */
   contentClassName?: string;
 };
 
 /**
- * Base application layout.
+ * Layout base de la aplicación.
  *
- * Non-responsive by design (per the technical test notes).
+ * No responsivo por diseño (según las notas de la prueba técnica).
  */
 export const AppShell = ({
   children,

@@ -5,10 +5,24 @@ import { PERMISSIONS } from '@/lib/rbac/permissions';
 import { getUserPermissionKeys } from '@/lib/rbac/server';
 import { Role } from '@/types';
 
+/**
+ * @openapi
+ * /api/roles:
+ *   get:
+ *     summary: Obtener roles
+ *     responses:
+ *       200:
+ *         description: Lista de roles
+ *       401:
+ *         description: No autenticado
+ *       403:
+ *         description: Sin permisos
+ */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Role[] | { error: string }>
 ) {
+  // Endpoint protegido: requiere sesión y permiso `USERS_EDIT`.
   const session = await getServerSession(req);
   if (!session) {
     return res.status(401).json({ error: 'Unauthorized' });

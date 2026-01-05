@@ -3,9 +3,9 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * Shadcn UI Card primitives.
+ * Primitivas de Card (shadcn/ui).
  *
- * Used across the app as a composable container.
+ * Se usan en toda la app como contenedor componible.
  */
 const Card = React.forwardRef<
   HTMLDivElement,

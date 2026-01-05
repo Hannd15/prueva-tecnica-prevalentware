@@ -18,7 +18,7 @@ const parseNumber = (value: unknown): number | null => {
  * @openapi
  * /api/users:
  *   get:
- *     summary: Get all users (paginated)
+ *     summary: Obtener usuarios (paginado)
  *     parameters:
  *       - in: query
  *         name: page
@@ -32,16 +32,17 @@ const parseNumber = (value: unknown): number | null => {
  *           default: 10
  *     responses:
  *       200:
- *         description: List of users
+ *         description: Lista de usuarios
  *       401:
- *         description: Unauthorized
+ *         description: No autenticado
  *       403:
- *         description: Forbidden
+ *         description: Sin permisos
  */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Endpoint protegido: requiere sesión y permiso `USERS_READ`.
   const session = await getServerSession(req);
   if (!session) {
     return res.status(401).json({ error: 'Unauthorized' });

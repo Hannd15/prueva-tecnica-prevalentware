@@ -22,6 +22,11 @@ export type LabeledDatePickerProps = {
   disabled?: boolean;
 };
 
+/**
+ * Selector de fecha con etiqueta.
+ *
+ * Componente controlado (`date`/`setDate`) que usa `Popover` + `Calendar`.
+ */
 export const LabeledDatePicker = ({
   label,
   id,

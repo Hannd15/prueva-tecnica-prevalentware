@@ -22,9 +22,9 @@ export type TitledCardProps = {
 };
 
 /**
- * Card wrapper with a consistent header (title/description/actions).
+ * Wrapper de tarjeta con encabezado consistente (título/descripción/acciones).
  *
- * Uses Shadcn Card primitives internally.
+ * Internamente usa los componentes base de shadcn/ui.
  */
 export const TitledCard = ({
   title,
