@@ -34,7 +34,7 @@ npm install
 Crea un archivo `.env` en la raíz del proyecto con el siguiente contenido:
 
 ```env
-# Base de Datos (Supabase)
+# Base de Datos
 DATABASE_URL="URL de conexión a la base de datos"
 
 # Better Auth Configuration
