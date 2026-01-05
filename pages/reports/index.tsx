@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
 import { type ReportsStats } from '@/types';
 
+import { NextPageAuth } from '@/pages/_app';
+
 /**
  * Página de reportes.
  *
@@ -73,8 +75,6 @@ const ReportsPage = () => {
   );
 };
 
-(
-  ReportsPage as typeof ReportsPage & { requiredPermissions?: string[] }
-).requiredPermissions = [PERMISSIONS.REPORTS_READ];
+(ReportsPage as NextPageAuth).requiredPermissions = [PERMISSIONS.REPORTS_READ];
 
 export default ReportsPage;

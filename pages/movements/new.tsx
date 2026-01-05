@@ -12,6 +12,8 @@ import { AppShell } from '@/components/templates/AppShell';
 import { Button } from '@/components/ui/button';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
 
+import { NextPageAuth } from '@/pages/_app';
+
 type ApiError = { error: string };
 
 /**
@@ -171,8 +173,8 @@ const NewMovementPage = () => {
   );
 };
 
-(
-  NewMovementPage as typeof NewMovementPage & { requiredPermissions?: string[] }
-).requiredPermissions = [PERMISSIONS.MOVEMENTS_CREATE];
+(NewMovementPage as NextPageAuth).requiredPermissions = [
+  PERMISSIONS.MOVEMENTS_CREATE,
+];
 
 export default NewMovementPage;

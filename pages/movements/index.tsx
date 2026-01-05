@@ -18,6 +18,8 @@ import {
   type PaginatedMovementsResponse,
 } from '@/types';
 
+import { NextPageAuth } from '@/pages/_app';
+
 /**
  * Página de gestión de movimientos (ingresos/egresos).
  *
@@ -159,8 +161,8 @@ const MovementsPage = () => {
   );
 };
 
-(
-  MovementsPage as typeof MovementsPage & { requiredPermissions?: string[] }
-).requiredPermissions = [PERMISSIONS.MOVEMENTS_READ];
+(MovementsPage as NextPageAuth).requiredPermissions = [
+  PERMISSIONS.MOVEMENTS_READ,
+];
 
 export default MovementsPage;
