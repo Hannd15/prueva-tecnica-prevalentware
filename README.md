@@ -21,7 +21,7 @@ Debes crear una **nueva** OAuth App en GitHub para el entorno de producción:
 
 ### Paso 2: Clonar el repositorio
 ```bash
-git clone https://github.com/Hannd15/prueva-tecnica-prevalentware.git
+git clone https://github.com/Hannd15/prueba-tecnica-prevalentware.git
 cd prueba-tecnica-prevalentware
 ```
 
