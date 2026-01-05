@@ -1,6 +1,24 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 /**
+ * @openapi
+ * /api/docs:
+ *   get:
+ *     tags: [Docs]
+ *     summary: UI Swagger
+ *     description: Sirve la interfaz Swagger UI que consume el spec de `/api/docs/openapi`.
+ *     responses:
+ *       200:
+ *         description: HTML de Swagger UI
+ *         content:
+ *           text/html:
+ *             schema:
+ *               type: string
+ *             examples:
+ *               ejemplo:
+ *                 value: "<!DOCTYPE html><html><head>...Swagger UI...</head><body>...</body></html>"
+ */
+/**
  * UI de documentación (Swagger).
  *
  * Sirve una página HTML que carga Swagger UI apuntando a `/api/docs/openapi`.

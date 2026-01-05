@@ -5,11 +5,25 @@ import { PERMISSIONS } from '@/lib/rbac/permissions';
 import { getUserPermissionKeys } from '@/lib/rbac/server';
 import { UserDetail } from '@/types';
 
+const userDetailSelect = {
+  select: {
+    id: true,
+    name: true,
+    email: true,
+    phone: true,
+    roleId: true,
+  },
+} as const;
+
 /**
  * @openapi
  * /api/users/{id}:
  *   get:
+ *     tags: [Users]
  *     summary: Obtener usuario por ID
+ *     description: Devuelve el detalle del usuario. Requiere permiso `USERS_EDIT`.
+ *     security:
+ *       - cookieAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -19,10 +33,51 @@ import { UserDetail } from '@/types';
  *     responses:
  *       200:
  *         description: Detalle del usuario
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserDetail'
+ *             examples:
+ *               ejemplo:
+ *                 value:
+ *                   id: "user_1"
+ *                   name: "Ada Lovelace"
+ *                   email: "ada@example.com"
+ *                   phone: "+57 300 000 0000"
+ *                   roleId: "role_admin"
+ *       401:
+ *         description: No autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               ejemplo:
+ *                 value: { error: "Unauthorized" }
+ *       403:
+ *         description: Sin permisos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               ejemplo:
+ *                 value: { error: "Forbidden" }
  *       404:
  *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               ejemplo:
+ *                 value: { error: "User not found" }
  *   patch:
+ *     tags: [Users]
  *     summary: Actualizar usuario
+ *     description: Actualiza campos editables del usuario. Requiere permiso `USERS_EDIT`.
+ *     security:
+ *       - cookieAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -42,11 +97,46 @@ import { UserDetail } from '@/types';
  *                 type: string
  *               phone:
  *                 type: string
+ *           examples:
+ *             ejemplo:
+ *               value:
+ *                 name: "Grace Hopper"
+ *                 roleId: "role_admin"
+ *                 phone: "+57 300 111 1111"
  *     responses:
  *       200:
  *         description: Usuario actualizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserDetail'
  *       400:
  *         description: Solicitud inválida
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               ejemplo:
+ *                 value: { error: "Invalid ID" }
+ *       401:
+ *         description: No autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: Sin permisos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Error interno
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 export default async function handler(
   req: NextApiRequest,
@@ -71,7 +161,7 @@ export default async function handler(
   if (req.method === 'GET') {
     const user = await prisma.user.findUnique({
       where: { id },
-      include: { role: true },
+      ...userDetailSelect,
     });
     if (!user) return res.status(404).json({ error: 'User not found' });
     return res.status(200).json(user);
@@ -88,7 +178,7 @@ export default async function handler(
           roleId,
           phone,
         },
-        include: { role: true },
+        ...userDetailSelect,
       });
       return res.status(200).json(updatedUser);
     } catch {

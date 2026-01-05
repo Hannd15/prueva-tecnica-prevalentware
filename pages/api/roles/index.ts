@@ -9,14 +9,51 @@ import { Role } from '@/types';
  * @openapi
  * /api/roles:
  *   get:
+ *     tags: [Roles]
  *     summary: Obtener roles
+ *     description: Lista de roles disponibles. Requiere permiso `USERS_EDIT`.
+ *     security:
+ *       - cookieAuth: []
  *     responses:
  *       200:
  *         description: Lista de roles
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Role'
+ *             examples:
+ *               ejemplo:
+ *                 value:
+ *                   - id: "role_admin"
+ *                     name: "ADMIN"
+ *                   - id: "role_user"
+ *                     name: "USER"
  *       401:
  *         description: No autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               ejemplo:
+ *                 value: { error: "Unauthorized" }
  *       403:
  *         description: Sin permisos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               ejemplo:
+ *                 value: { error: "Forbidden" }
+ *       405:
+ *         description: Método no permitido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 export default async function handler(
   req: NextApiRequest,

@@ -15,14 +15,56 @@ type ErrorResponse = {
  * @openapi
  * /api/reports/stats:
  *   get:
+ *     tags: [Reports]
  *     summary: Obtener estadísticas financieras y datos para el gráfico
+ *     description: Devuelve totales (ingresos/egresos/balance) y puntos del gráfico (últimos 30 días). Requiere permiso `REPORTS_READ`.
+ *     security:
+ *       - cookieAuth: []
  *     responses:
  *       200:
  *         description: Datos de estadísticas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ReportsStats'
+ *             examples:
+ *               ejemplo:
+ *                 value:
+ *                   summary:
+ *                     totalIncomes: 2500
+ *                     totalExpenses: 300
+ *                     balance: 2200
+ *                   chartData:
+ *                     - date: "2026-01-03"
+ *                       incomes: 2500
+ *                       expenses: 0
+ *                     - date: "2026-01-04"
+ *                       incomes: 0
+ *                       expenses: 300
  *       401:
  *         description: No autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       403:
  *         description: Sin permisos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       405:
+ *         description: Método no permitido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Error interno
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 export default async function handler(
   req: NextApiRequest,

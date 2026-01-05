@@ -60,7 +60,11 @@ const toMovementListItem = (movement: {
  * @openapi
  * /api/movements:
  *   get:
+ *     tags: [Movements]
  *     summary: Obtener movimientos (paginado)
+ *     description: Lista paginada de movimientos con resumen (ingresos, egresos y balance). Requiere permiso `MOVEMENTS_READ`.
+ *     security:
+ *       - cookieAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -75,10 +79,53 @@ const toMovementListItem = (movement: {
  *     responses:
  *       200:
  *         description: Lista de movimientos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedMovementsResponse'
+ *             examples:
+ *               ejemplo:
+ *                 value:
+ *                   data:
+ *                     - id: "mov_1"
+ *                       concept: "Salario"
+ *                       amount: 2500
+ *                       date: "2026-01-04T00:00:00.000Z"
+ *                       type: "INCOME"
+ *                       userName: "Ada Lovelace"
+ *                   meta:
+ *                     total: 1
+ *                     page: 1
+ *                     pageSize: 10
+ *                     totalPages: 1
+ *                   summary:
+ *                     totalIncomes: 2500
+ *                     totalExpenses: 0
+ *                     balance: 2500
  *       401:
  *         description: No autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: Sin permisos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Error interno
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *   post:
+ *     tags: [Movements]
  *     summary: Crear un nuevo movimiento
+ *     description: Crea un movimiento financiero. Requiere permiso `MOVEMENTS_CREATE`.
+ *     security:
+ *       - cookieAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -101,13 +148,38 @@ const toMovementListItem = (movement: {
  *               type:
  *                 type: string
  *                 enum: [INCOME, EXPENSE]
+ *           examples:
+ *             ejemplo:
+ *               value:
+ *                 concept: "Compra de insumos"
+ *                 amount: 150
+ *                 date: "2026-01-04T00:00:00.000Z"
+ *                 type: "EXPENSE"
  *     responses:
  *       201:
  *         description: Movimiento creado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MovementListItem'
  *       400:
  *         description: Solicitud inválida
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       401:
  *         description: No autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: Sin permisos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 const handleGet = async (
   req: NextApiRequest,

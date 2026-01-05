@@ -18,7 +18,11 @@ const parseNumber = (value: unknown): number | null => {
  * @openapi
  * /api/users:
  *   get:
+ *     tags: [Users]
  *     summary: Obtener usuarios (paginado)
+ *     description: Lista paginada de usuarios. Requiere permiso `USERS_READ`.
+ *     security:
+ *       - cookieAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -33,10 +37,48 @@ const parseNumber = (value: unknown): number | null => {
  *     responses:
  *       200:
  *         description: Lista de usuarios
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedUsersResponse'
+ *             examples:
+ *               ejemplo:
+ *                 value:
+ *                   data:
+ *                     - id: "user_1"
+ *                       name: "Ada Lovelace"
+ *                       email: "ada@example.com"
+ *                       phone: "+57 300 000 0000"
+ *                       roleName: "ADMIN"
+ *                   meta:
+ *                     total: 1
+ *                     page: 1
+ *                     pageSize: 10
+ *                     totalPages: 1
  *       401:
  *         description: No autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               ejemplo:
+ *                 value: { error: "Unauthorized" }
  *       403:
  *         description: Sin permisos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               ejemplo:
+ *                 value: { error: "Forbidden" }
+ *       405:
+ *         description: Método no permitido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 export default async function handler(
   req: NextApiRequest,

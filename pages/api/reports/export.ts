@@ -10,7 +10,11 @@ import { formatDate } from '@/lib/utils';
  * @openapi
  * /api/reports/export:
  *   get:
+ *     tags: [Reports]
  *     summary: Exportar movimientos a CSV
+ *     description: Descarga un CSV con todos los movimientos. Requiere permiso `REPORTS_READ`.
+ *     security:
+ *       - cookieAuth: []
  *     responses:
  *       200:
  *         description: Archivo CSV
@@ -19,10 +23,34 @@ import { formatDate } from '@/lib/utils';
  *             schema:
  *               type: string
  *               format: binary
+ *             examples:
+ *               ejemplo:
+ *                 summary: Contenido CSV (primeras líneas)
+ *                 value: "Fecha,Concepto,Tipo,Monto,Usuario\n2026-01-04,\"Compra\",Egreso,150,Ada Lovelace"
  *       401:
  *         description: No autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       403:
  *         description: Sin permisos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       405:
+ *         description: Método no permitido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Error interno
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 export default async function handler(
   req: NextApiRequest,
