@@ -38,12 +38,6 @@ const Home = () => {
           title='Panel de Control'
           subtitle='Resumen general de tu actividad financiera.'
         />
-        <Button variant='outline' size='sm' asChild className='hidden md:flex'>
-          <Link href='/movements' className='flex items-center gap-2'>
-            Ver todos los movimientos
-            <ArrowRight className='h-4 w-4' />
-          </Link>
-        </Button>
       </div>
 
       <div className='grid gap-6 md:grid-cols-3'>
