@@ -1,8 +1,8 @@
 import '@/styles/globals.css';
 import type { AppContext, AppProps } from 'next/app';
 import App from 'next/app';
-import { useRouter } from 'next/router';
-import React from 'react';
+import Router, { useRouter } from 'next/router';
+import React, { useSyncExternalStore } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { authClient } from '@/lib/auth/client';
@@ -10,6 +10,40 @@ import { getServerSession } from '@/lib/auth/server';
 import { hasAllPermissions } from '@/lib/rbac/permissions';
 import { getUserPermissionKeys } from '@/lib/rbac/server';
 import { usePermissions } from '@/lib/rbac/client';
+import { PageLoader } from '@/components/atoms/PageLoader';
+
+// --- Store del Router para useSyncExternalStore ---
+// Permite rastrear el estado de carga de las rutas de forma reactiva.
+let isRouteLoading = false;
+const listeners = new Set<() => void>();
+
+const subscribe = (callback: () => void) => {
+  listeners.add(callback);
+  return () => listeners.delete(callback);
+};
+
+const getSnapshot = () => isRouteLoading;
+const getServerSnapshot = () => false;
+
+const emit = () => listeners.forEach((callback) => callback());
+
+Router.events.on('routeChangeStart', (url) => {
+  if (url !== Router.asPath) {
+    isRouteLoading = true;
+    emit();
+  }
+});
+
+Router.events.on('routeChangeComplete', () => {
+  isRouteLoading = false;
+  emit();
+});
+
+Router.events.on('routeChangeError', () => {
+  isRouteLoading = false;
+  emit();
+});
+// --------------------------------------------------
 
 export type NextPageAuth = {
   requiredPermissions?: string[];
@@ -51,6 +85,12 @@ const AuthGuard = ({
 
 const MyApp = ({ Component, pageProps }: AppPropsWithAuth) => {
   const router = useRouter();
+  const isRouteLoading = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot
+  );
+
   const queryClient = React.useMemo(
     () =>
       new QueryClient({
@@ -72,7 +112,10 @@ const MyApp = ({ Component, pageProps }: AppPropsWithAuth) => {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>{content}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      {isRouteLoading && <PageLoader />}
+      {content}
+    </QueryClientProvider>
   );
 };
 

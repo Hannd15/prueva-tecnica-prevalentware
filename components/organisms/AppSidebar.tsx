@@ -30,9 +30,9 @@ export const AppSidebar = ({ className }: AppSidebarProps) => {
         'w-72 shrink-0 border-r bg-card flex flex-col h-full transition-all duration-300',
         className
       )}
-      aria-label='Main navigation'
+      aria-label='Navegación principal'
     >
-      {/* Logo / Brand Area */}
+      {/* Área de Logo / Marca */}
       <div className='h-16 flex items-center px-6 border-b mb-6'>
         <Link href='/' className='flex items-center gap-2.5 group'>
           <div className='w-8 h-8 bg-primary rounded-lg flex items-center justify-center transition-transform group-hover:scale-105'>
@@ -43,7 +43,7 @@ export const AppSidebar = ({ className }: AppSidebarProps) => {
       </div>
 
       <div className='flex-1 px-4 space-y-8'>
-        {/* Main Navigation Group */}
+        {/* Grupo de Navegación Principal */}
         <div className='space-y-1'>
           <p className='px-2 mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70'>
             Menú Principal
