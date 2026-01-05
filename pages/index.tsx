@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { TrendingUp, TrendingDown, Wallet, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { TrendingUp, TrendingDown, Wallet } from 'lucide-react';
 
 import { PageHeader } from '@/components/organisms/PageHeader';
 import { HomeActionCards } from '@/components/organisms/HomeActionCards';
@@ -8,7 +7,6 @@ import { AppShell } from '@/components/templates/AppShell';
 import { StatCard } from '@/components/molecules/StatCard';
 import { formatCurrency } from '@/lib/utils';
 import { type PaginatedMovementsResponse } from '@/types';
-import { Button } from '@/components/ui/button';
 
 /**
  * Página de inicio (Dashboard).

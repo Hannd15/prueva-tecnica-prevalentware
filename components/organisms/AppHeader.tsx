@@ -22,19 +22,23 @@ export const AppHeader = () => {
     });
   };
 
+  const renderUserSection = () => {
+    if (isPending) {
+      return <div className='w-8 h-8 rounded-full bg-muted animate-pulse' />;
+    }
+    if (session) {
+      return <UserMenu session={session} onLogout={onLogout} />;
+    }
+    return (
+      <Button size='sm' onClick={() => router.push('/login')}>
+        Iniciar sesión
+      </Button>
+    );
+  };
+
   return (
     <header className='h-16 border-b bg-background flex items-center justify-end px-8 shrink-0'>
-      <div className='flex items-center gap-4'>
-        {isPending ? (
-          <div className='w-8 h-8 rounded-full bg-muted animate-pulse' />
-        ) : session ? (
-          <UserMenu session={session} onLogout={onLogout} />
-        ) : (
-          <Button size='sm' onClick={() => router.push('/login')}>
-            Iniciar sesión
-          </Button>
-        )}
-      </div>
+      <div className='flex items-center gap-4'>{renderUserSection()}</div>
     </header>
   );
 };
