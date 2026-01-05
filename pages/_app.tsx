@@ -10,7 +10,7 @@ import { getServerSession } from '@/lib/auth/server';
 import { hasAllPermissions } from '@/lib/rbac/permissions';
 import { getUserPermissionKeys } from '@/lib/rbac/server';
 import { usePermissions } from '@/lib/rbac/client';
-import { PageLoader } from '@/components/atoms/PageLoader';
+import { PageLoader } from '@/components/molecules/PageLoader';
 
 // --- Store del Router para useSyncExternalStore ---
 // Permite rastrear el estado de carga de las rutas de forma reactiva.

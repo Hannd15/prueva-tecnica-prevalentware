@@ -55,7 +55,17 @@ const EditUserPage = () => {
       if (!res.ok) throw new Error('Failed to update user');
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      // Si el usuario editado es el mismo que tiene la sesión iniciada,
+      // forzamos una recarga completa para refrescar los permisos en el cliente y servidor.
+      const sessionRes = await fetch('/api/auth/get-session');
+      const session = await sessionRes.json().catch(() => null);
+
+      if (session?.user?.id === id) {
+        window.location.href = '/';
+        return;
+      }
+
       queryClient.invalidateQueries({ queryKey: ['users'] });
       router.push('/users');
     },
