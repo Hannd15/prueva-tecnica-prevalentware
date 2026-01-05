@@ -1,4 +1,5 @@
 import swaggerJsdoc from 'swagger-jsdoc';
+import path from 'path';
 
 const options: swaggerJsdoc.Options = {
   definition: {
@@ -187,7 +188,10 @@ const options: swaggerJsdoc.Options = {
       },
     ],
   },
-  apis: ['./pages/api/**/*.ts'], // Ruta a los archivos donde viven los JSDoc OpenAPI
+  apis: [
+    path.join(process.cwd(), 'pages/api/**/*.ts'),
+    path.join(process.cwd(), 'lib/swagger.ts'),
+  ],
 };
 
 export const spec = swaggerJsdoc(options);
