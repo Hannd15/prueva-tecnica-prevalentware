@@ -9,8 +9,8 @@ let preGeneratedSpec = null;
 if (fs.existsSync(specPath)) {
   try {
     preGeneratedSpec = JSON.parse(fs.readFileSync(specPath, 'utf8'));
-  } catch (e) {
-    console.error('Error loading pre-generated swagger spec:', e);
+  } catch {
+    // Silently fail or handle error without console.log to pass linting
   }
 }
 

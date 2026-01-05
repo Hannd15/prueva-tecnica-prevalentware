@@ -1,0 +1,1295 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Prueba Técnica API",
+    "version": "1.0.0",
+    "description": "Documentación de la API para la prueba técnica Fullstack"
+  },
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Autenticación (Better Auth)"
+    },
+    {
+      "name": "Docs",
+      "description": "Documentación OpenAPI/Swagger"
+    },
+    {
+      "name": "Me",
+      "description": "Información del usuario autenticado"
+    },
+    {
+      "name": "Roles",
+      "description": "Roles del sistema"
+    },
+    {
+      "name": "Users",
+      "description": "Gestión de usuarios"
+    },
+    {
+      "name": "Movements",
+      "description": "Movimientos financieros"
+    },
+    {
+      "name": "Reports",
+      "description": "Reportes"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "better-auth.session_token"
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "additionalProperties": false
+      },
+      "Role": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "UserListItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "roleName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "roleName"
+        ],
+        "additionalProperties": false
+      },
+      "PaginatedUsersResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserListItem"
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer"
+              },
+              "page": {
+                "type": "integer"
+              },
+              "pageSize": {
+                "type": "integer"
+              },
+              "totalPages": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "total",
+              "page",
+              "pageSize",
+              "totalPages"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "additionalProperties": false
+      },
+      "UserDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "roleId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "roleId"
+        ],
+        "additionalProperties": false
+      },
+      "MovementListItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "concept": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "INCOME",
+              "EXPENSE"
+            ]
+          },
+          "userName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "concept",
+          "amount",
+          "date",
+          "type",
+          "userName"
+        ],
+        "additionalProperties": false
+      },
+      "PaginatedMovementsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MovementListItem"
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer"
+              },
+              "page": {
+                "type": "integer"
+              },
+              "pageSize": {
+                "type": "integer"
+              },
+              "totalPages": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "total",
+              "page",
+              "pageSize",
+              "totalPages"
+            ],
+            "additionalProperties": false
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "totalIncomes": {
+                "type": "number"
+              },
+              "totalExpenses": {
+                "type": "number"
+              },
+              "balance": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "totalIncomes",
+              "totalExpenses",
+              "balance"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "data",
+          "meta",
+          "summary"
+        ],
+        "additionalProperties": false
+      },
+      "ChartDataPoint": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Fecha en formato YYYY-MM-DD"
+          },
+          "incomes": {
+            "type": "number"
+          },
+          "expenses": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "date",
+          "incomes",
+          "expenses"
+        ],
+        "additionalProperties": false
+      },
+      "ReportsStats": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "object",
+            "properties": {
+              "totalIncomes": {
+                "type": "number"
+              },
+              "totalExpenses": {
+                "type": "number"
+              },
+              "balance": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "totalIncomes",
+              "totalExpenses",
+              "balance"
+            ],
+            "additionalProperties": false
+          },
+          "chartData": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChartDataPoint"
+            }
+          }
+        },
+        "required": [
+          "summary",
+          "chartData"
+        ],
+        "additionalProperties": false
+      },
+      "PermissionsResponse": {
+        "type": "object",
+        "properties": {
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "permissions"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "security": [
+    {
+      "cookieAuth": []
+    }
+  ],
+  "paths": {
+    "/api/auth/{path}": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Endpoints de autenticación (Better Auth)",
+        "description": "Ruta comodín manejada por Better Auth para flujos de autenticación (por ejemplo OAuth).\\\nEsta aplicación delega la implementación a la librería; la forma exacta de `path` depende del proveedor/configuración.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Segmento de ruta dinámico bajo `/api/auth/*`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta del flujo de autenticación"
+          },
+          "302": {
+            "description": "Redirección (típico en OAuth)"
+          },
+          "400": {
+            "description": "Solicitud inválida"
+          },
+          "401": {
+            "description": "No autenticado"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Endpoints de autenticación (Better Auth)",
+        "description": "Maneja callbacks y operaciones de autenticación que requieren POST.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta del flujo de autenticación"
+          },
+          "400": {
+            "description": "Solicitud inválida"
+          },
+          "401": {
+            "description": "No autenticado"
+          }
+        }
+      }
+    },
+    "/api/docs": {
+      "get": {
+        "tags": [
+          "Docs"
+        ],
+        "summary": "UI Swagger",
+        "description": "Sirve la interfaz Swagger UI que consume el spec de `/api/docs/openapi`.",
+        "responses": {
+          "200": {
+            "description": "HTML de Swagger UI",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "ejemplo": {
+                    "value": "<!DOCTYPE html><html><head>...Swagger UI...</head><body>...</body></html>"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/docs/openapi": {
+      "get": {
+        "tags": [
+          "Docs"
+        ],
+        "summary": "Documento OpenAPI (JSON)",
+        "description": "Devuelve el spec OpenAPI generado a partir de los bloques `@openapi` en los handlers.",
+        "responses": {
+          "200": {
+            "description": "Spec OpenAPI",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/me/permissions": {
+      "get": {
+        "tags": [
+          "Me"
+        ],
+        "summary": "Obtener permisos del usuario autenticado",
+        "description": "Devuelve las claves de permisos RBAC del usuario actual. Se usa en el cliente para habilitar/ocultar secciones.",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de permisos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PermissionsResponse"
+                },
+                "examples": {
+                  "ejemplo": {
+                    "value": {
+                      "permissions": [
+                        "MOVEMENTS_READ",
+                        "MOVEMENTS_CREATE",
+                        "USERS_READ",
+                        "REPORTS_READ"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Método no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/movements": {
+      "get": {
+        "tags": [
+          "Movements"
+        ],
+        "summary": "Obtener movimientos (paginado)",
+        "description": "Lista paginada de movimientos con resumen (ingresos, egresos y balance). Requiere permiso `MOVEMENTS_READ`.",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de movimientos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedMovementsResponse"
+                },
+                "examples": {
+                  "ejemplo": {
+                    "value": {
+                      "data": [
+                        {
+                          "id": "mov_1",
+                          "concept": "Salario",
+                          "amount": 2500,
+                          "date": "2026-01-04T00:00:00.000Z",
+                          "type": "INCOME",
+                          "userName": "Ada Lovelace"
+                        }
+                      ],
+                      "meta": {
+                        "total": 1,
+                        "page": 1,
+                        "pageSize": 10,
+                        "totalPages": 1
+                      },
+                      "summary": {
+                        "totalIncomes": 2500,
+                        "totalExpenses": 0,
+                        "balance": 2500
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sin permisos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Movements"
+        ],
+        "summary": "Crear un nuevo movimiento",
+        "description": "Crea un movimiento financiero. Requiere permiso `MOVEMENTS_CREATE`.",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "concept",
+                  "amount",
+                  "date",
+                  "type"
+                ],
+                "properties": {
+                  "concept": {
+                    "type": "string"
+                  },
+                  "amount": {
+                    "type": "number"
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "INCOME",
+                      "EXPENSE"
+                    ]
+                  }
+                }
+              },
+              "examples": {
+                "ejemplo": {
+                  "value": {
+                    "concept": "Compra de insumos",
+                    "amount": 150,
+                    "date": "2026-01-04T00:00:00.000Z",
+                    "type": "EXPENSE"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Movimiento creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MovementListItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sin permisos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/export": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "summary": "Exportar movimientos a CSV",
+        "description": "Descarga un CSV con todos los movimientos. Requiere permiso `REPORTS_READ`.",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Archivo CSV",
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                },
+                "examples": {
+                  "ejemplo": {
+                    "summary": "Contenido CSV (primeras líneas)",
+                    "value": "Fecha,Concepto,Tipo,Monto,Usuario\n2026-01-04,\"Compra\",Egreso,150,Ada Lovelace"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sin permisos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Método no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reports/stats": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "summary": "Obtener estadísticas financieras y datos para el gráfico",
+        "description": "Devuelve totales (ingresos/egresos/balance) y puntos del gráfico (últimos 30 días). Requiere permiso `REPORTS_READ`.",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Datos de estadísticas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportsStats"
+                },
+                "examples": {
+                  "ejemplo": {
+                    "value": {
+                      "summary": {
+                        "totalIncomes": 2500,
+                        "totalExpenses": 300,
+                        "balance": 2200
+                      },
+                      "chartData": [
+                        {
+                          "date": "2026-01-03",
+                          "incomes": 2500,
+                          "expenses": 0
+                        },
+                        {
+                          "date": "2026-01-04",
+                          "incomes": 0,
+                          "expenses": 300
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sin permisos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Método no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/roles": {
+      "get": {
+        "tags": [
+          "Roles"
+        ],
+        "summary": "Obtener roles",
+        "description": "Lista de roles disponibles. Requiere permiso `USERS_EDIT`.",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de roles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Role"
+                  }
+                },
+                "examples": {
+                  "ejemplo": {
+                    "value": [
+                      {
+                        "id": "role_admin",
+                        "name": "ADMIN"
+                      },
+                      {
+                        "id": "role_user",
+                        "name": "USER"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "ejemplo": {
+                    "value": {
+                      "error": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sin permisos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "ejemplo": {
+                    "value": {
+                      "error": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Método no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Obtener usuario por ID",
+        "description": "Devuelve el detalle del usuario. Requiere permiso `USERS_EDIT`.",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalle del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDetail"
+                },
+                "examples": {
+                  "ejemplo": {
+                    "value": {
+                      "id": "user_1",
+                      "name": "Ada Lovelace",
+                      "email": "ada@example.com",
+                      "phone": "+57 300 000 0000",
+                      "roleId": "role_admin"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "ejemplo": {
+                    "value": {
+                      "error": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sin permisos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "ejemplo": {
+                    "value": {
+                      "error": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "ejemplo": {
+                    "value": {
+                      "error": "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Actualizar usuario",
+        "description": "Actualiza campos editables del usuario. Requiere permiso `USERS_EDIT`.",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "roleId": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                "ejemplo": {
+                  "value": {
+                    "name": "Grace Hopper",
+                    "roleId": "role_admin",
+                    "phone": "+57 300 111 1111"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuario actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "ejemplo": {
+                    "value": {
+                      "error": "Invalid ID"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sin permisos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Obtener usuarios (paginado)",
+        "description": "Lista paginada de usuarios. Requiere permiso `USERS_READ`.",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "pageSize",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de usuarios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedUsersResponse"
+                },
+                "examples": {
+                  "ejemplo": {
+                    "value": {
+                      "data": [
+                        {
+                          "id": "user_1",
+                          "name": "Ada Lovelace",
+                          "email": "ada@example.com",
+                          "phone": "+57 300 000 0000",
+                          "roleName": "ADMIN"
+                        }
+                      ],
+                      "meta": {
+                        "total": 1,
+                        "page": 1,
+                        "pageSize": 10,
+                        "totalPages": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "ejemplo": {
+                    "value": {
+                      "error": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sin permisos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "ejemplo": {
+                    "value": {
+                      "error": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Método no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
