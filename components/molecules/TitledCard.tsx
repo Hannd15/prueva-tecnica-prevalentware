@@ -22,9 +22,8 @@ export type TitledCardProps = {
 };
 
 /**
- * Wrapper de tarjeta con encabezado consistente (título/descripción/acciones).
- *
- * Internamente usa los componentes base de shadcn/ui.
+ * Wrapper de tarjeta con encabezado consistente.
+ * Diseño minimalista con bordes sutiles y tipografía clara.
  */
 export const TitledCard = ({
   title,
@@ -37,13 +36,25 @@ export const TitledCard = ({
   descriptionClassName,
   contentClassName,
 }: TitledCardProps) => (
-  <Card className={className}>
-    <CardHeader className={headerClassName}>
-      <div className='flex items-start justify-between gap-6'>
-        <div>
-          <CardTitle className={titleClassName}>{title}</CardTitle>
+  <Card className={cn('shadow-none border-border/60 bg-card', className)}>
+    <CardHeader className={cn('px-6 py-5', headerClassName)}>
+      <div className='flex items-start justify-between gap-4'>
+        <div className='space-y-1'>
+          <CardTitle
+            className={cn(
+              'text-base font-semibold tracking-tight',
+              titleClassName
+            )}
+          >
+            {title}
+          </CardTitle>
           {description ? (
-            <CardDescription className={descriptionClassName}>
+            <CardDescription
+              className={cn(
+                'text-sm text-muted-foreground/80',
+                descriptionClassName
+              )}
+            >
               {description}
             </CardDescription>
           ) : null}
@@ -53,7 +64,7 @@ export const TitledCard = ({
     </CardHeader>
 
     {children ? (
-      <CardContent className={cn('pt-0', contentClassName)}>
+      <CardContent className={cn('px-6 pb-6 pt-0', contentClassName)}>
         {children}
       </CardContent>
     ) : null}

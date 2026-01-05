@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { MovementType } from '@prisma/client';
 import { useRouter } from 'next/router';
 import { useQuery } from '@tanstack/react-query';
+import { Plus } from 'lucide-react';
 
 import { usePermissions } from '@/lib/rbac/client';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
@@ -20,6 +20,8 @@ import {
 
 /**
  * Página de gestión de movimientos (ingresos/egresos).
+ *
+ * Muestra una tabla con los movimientos financieros y permite filtrar/paginar.
  */
 const MovementsPage = () => {
   const router = useRouter();
@@ -45,39 +47,44 @@ const MovementsPage = () => {
     {
       key: 'concept',
       header: 'Concepto',
-      cell: (row) => <span className='font-medium'>{row.concept}</span>,
-    },
-    {
-      key: 'type',
-      header: 'Tipo',
       cell: (row) => (
-        <span
-          className={
-            row.type === MovementType.INCOME
-              ? 'text-green-600 font-medium'
-              : 'text-red-600 font-medium'
-          }
-        >
-          {row.type === MovementType.INCOME ? 'Ingreso' : 'Egreso'}
-        </span>
+        <div className='flex flex-col'>
+          <span className='font-medium text-foreground'>{row.concept}</span>
+          <span className='text-xs text-muted-foreground md:hidden'>
+            {formatDate(row.date)}
+          </span>
+        </div>
       ),
     },
     {
       key: 'amount',
       header: 'Monto',
       headerClassName: 'text-right',
-      className: 'text-right',
-      cell: (row) => formatCurrency(row.amount),
+      className: 'text-right tabular-nums font-semibold',
+      cell: (row) => (
+        <span
+          className={row.amount >= 0 ? 'text-emerald-600' : 'text-rose-600'}
+        >
+          {row.amount >= 0 ? '+' : ''}
+          {formatCurrency(row.amount)}
+        </span>
+      ),
     },
     {
       key: 'date',
       header: 'Fecha',
+      className: 'hidden md:table-cell text-muted-foreground',
       cell: (row) => formatDate(row.date),
     },
     {
       key: 'user',
       header: 'Usuario',
-      cell: (row) => row.userName ?? '-',
+      className: 'hidden lg:table-cell',
+      cell: (row) => (
+        <span className='text-sm text-muted-foreground'>
+          {row.userName ?? 'Sistema'}
+        </span>
+      ),
     },
   ];
 
@@ -96,30 +103,30 @@ const MovementsPage = () => {
   };
 
   return (
-    <AppShell
-      pageTitle='Gestión de ingresos y gastos'
-      contentClassName='space-y-6'
-    >
-      <PageHeader
-        title='Gestión de ingresos y gastos'
-        subtitle='Consulta y registra movimientos financieros.'
-      />
+    <AppShell pageTitle='Movimientos' contentClassName='space-y-8'>
+      <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
+        <PageHeader
+          title='Movimientos'
+          subtitle='Historial detallado de transacciones financieras.'
+        />
+        {canCreate && (
+          <Button asChild className='w-full md:w-auto shadow-sm'>
+            <Link href='/movements/new' className='flex items-center gap-2'>
+              <Plus className='h-4 w-4' />
+              Nuevo Movimiento
+            </Link>
+          </Button>
+        )}
+      </div>
 
       <DataTable
-        title='Movimientos'
-        description='Listado de ingresos y egresos registrados.'
-        actions={
-          canCreate ? (
-            <Button asChild>
-              <Link href='/movements/new'>Nuevo</Link>
-            </Button>
-          ) : null
-        }
+        title='Transacciones'
+        description='Listado de ingresos y egresos registrados en el sistema.'
         columns={columns}
         rows={data?.data ?? []}
         getRowKey={(row) => row.id}
         isLoading={isLoading}
-        emptyMessage='No hay movimientos aún.'
+        emptyMessage='No se encontraron movimientos.'
         pagination={
           data
             ? {
@@ -131,19 +138,22 @@ const MovementsPage = () => {
         }
         footer={
           data ? (
-            <div className='flex items-center gap-2 text-lg font-bold'>
-              <span>Total:</span>
+            <div className='flex items-center justify-between w-full pt-4 border-t'>
+              <span className='text-sm font-medium text-muted-foreground'>
+                Balance Total
+              </span>
               <span
-                className={
-                  data.summary.balance >= 0 ? 'text-green-600' : 'text-red-600'
-                }
+                className={`text-xl font-bold tabular-nums ${
+                  data.summary.balance >= 0
+                    ? 'text-emerald-600'
+                    : 'text-rose-600'
+                }`}
               >
                 {formatCurrency(data.summary.balance)}
               </span>
             </div>
           ) : null
         }
-        className='flex-1 min-h-0'
       />
     </AppShell>
   );

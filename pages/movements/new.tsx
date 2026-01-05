@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { MovementType } from '@prisma/client';
+import { ArrowLeft, Save } from 'lucide-react';
 
 import { LabeledInput } from '@/components/molecules/LabeledInput';
 import { LabeledSelect } from '@/components/molecules/LabeledSelect';
@@ -17,6 +18,7 @@ type ApiError = { error: string };
  * Página para crear un nuevo movimiento.
  *
  * Requiere permiso `MOVEMENTS_CREATE`.
+ * Presenta un formulario limpio y enfocado.
  */
 const NewMovementPage = () => {
   const router = useRouter();
@@ -62,74 +64,105 @@ const NewMovementPage = () => {
   };
 
   return (
-    <AppShell pageTitle='Nuevo movimiento' contentClassName='space-y-6'>
-      <PageHeader
-        title='Nuevo movimiento'
-        subtitle='Registra un ingreso o egreso.'
-      />
+    <AppShell
+      pageTitle='Nuevo Movimiento'
+      contentClassName='max-w-2xl mx-auto space-y-8'
+    >
+      <div className='flex items-center gap-4'>
+        <Button
+          variant='ghost'
+          size='icon'
+          onClick={() => router.push('/movements')}
+          className='rounded-full'
+        >
+          <ArrowLeft className='h-5 w-5' />
+        </Button>
+        <PageHeader
+          title='Registrar Movimiento'
+          subtitle='Ingresa los detalles de la transacción.'
+        />
+      </div>
 
       <TitledCard
-        title='Formulario'
-        description='Completa los datos del movimiento.'
+        title='Detalles de la Transacción'
+        description='Asegúrate de que los montos y conceptos sean correctos.'
+        className='shadow-lg border-primary/10'
       >
-        <form onSubmit={onSubmit} className='space-y-4'>
-          <LabeledSelect
-            label='Tipo'
-            id='type'
-            value={type}
-            onValueChange={(val) => setType(val as MovementType)}
-            options={[
-              { value: MovementType.INCOME, label: 'Ingreso' },
-              { value: MovementType.EXPENSE, label: 'Egreso' },
-            ]}
-            disabled={isSubmitting}
-          />
+        <form onSubmit={onSubmit} className='space-y-6 pt-4'>
+          <div className='grid gap-6 sm:grid-cols-2'>
+            <LabeledSelect
+              label='Tipo de Movimiento'
+              id='type'
+              value={type}
+              onValueChange={(val) => setType(val as MovementType)}
+              options={[
+                { value: MovementType.INCOME, label: 'Ingreso (+)' },
+                { value: MovementType.EXPENSE, label: 'Egreso (-)' },
+              ]}
+              disabled={isSubmitting}
+            />
+
+            <LabeledDatePicker
+              label='Fecha Contable'
+              id='date'
+              date={date}
+              setDate={setDate}
+              disabled={isSubmitting}
+            />
+          </div>
 
           <LabeledInput
             label='Monto'
             id='amount'
             name='amount'
             inputMode='decimal'
-            placeholder='100000'
+            placeholder='0.00'
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             disabled={isSubmitting}
             required
+            className='text-lg font-semibold tabular-nums'
           />
 
           <LabeledInput
-            label='Concepto'
+            label='Concepto o Descripción'
             id='concept'
             name='concept'
-            placeholder='Pago de servicios'
+            placeholder='Ej: Pago de nómina, Venta de servicios...'
             value={concept}
             onChange={(e) => setConcept(e.target.value)}
             disabled={isSubmitting}
             required
           />
 
-          <LabeledDatePicker
-            label='Fecha'
-            id='date'
-            date={date}
-            setDate={setDate}
-            disabled={isSubmitting}
-          />
-
           {error ? (
-            <div className='text-sm text-destructive'>{error}</div>
+            <div className='p-3 rounded-md bg-destructive/10 text-destructive text-sm font-medium border border-destructive/20'>
+              {error}
+            </div>
           ) : null}
 
-          <div className='flex gap-3'>
-            <Button type='submit' disabled={isSubmitting}>
-              {isSubmitting ? 'Guardando...' : 'Guardar'}
-            </Button>
+          <div className='flex items-center justify-end gap-3 pt-4 border-t'>
             <Button
               type='button'
-              variant='secondary'
+              variant='ghost'
               onClick={() => router.push('/movements')}
+              disabled={isSubmitting}
             >
               Cancelar
+            </Button>
+            <Button
+              type='submit'
+              disabled={isSubmitting}
+              className='min-w-[120px]'
+            >
+              {isSubmitting ? (
+                'Guardando...'
+              ) : (
+                <>
+                  <Save className='mr-2 h-4 w-4' />
+                  Guardar
+                </>
+              )}
             </Button>
           </div>
         </form>

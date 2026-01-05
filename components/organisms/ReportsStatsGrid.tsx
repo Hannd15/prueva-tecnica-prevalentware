@@ -13,7 +13,7 @@ type ReportsStats = {
 /**
  * Grid de métricas principales de reportes.
  *
- * Muestra ingresos, egresos y saldo; soporta estado de carga.
+ * Muestra ingresos, egresos y saldo con una disposición responsiva.
  */
 export const ReportsStatsGrid = ({
   data,
@@ -22,25 +22,25 @@ export const ReportsStatsGrid = ({
   data: ReportsStats | null;
   isLoading: boolean;
 }) => (
-  <div className='grid grid-cols-3 gap-6'>
+  <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3'>
     <StatCard
       label='Total Ingresos'
       value={formatCurrency(data?.summary.totalIncomes ?? 0)}
-      icon={<TrendingUp className='h-4 w-4 text-green-600' />}
+      icon={<TrendingUp className='h-5 w-5' />}
       variant='success'
       isLoading={isLoading}
     />
     <StatCard
       label='Total Egresos'
       value={formatCurrency(data?.summary.totalExpenses ?? 0)}
-      icon={<TrendingDown className='h-4 w-4 text-red-600' />}
+      icon={<TrendingDown className='h-5 w-5' />}
       variant='destructive'
       isLoading={isLoading}
     />
     <StatCard
-      label='Saldo Actual'
+      label='Saldo Neto'
       value={formatCurrency(data?.summary.balance ?? 0)}
-      icon={<Wallet className='h-4 w-4' />}
+      icon={<Wallet className='h-5 w-5' />}
       variant={(data?.summary.balance ?? 0) >= 0 ? 'success' : 'destructive'}
       isLoading={isLoading}
     />

@@ -50,7 +50,9 @@ describe('/api/roles', () => {
 
   it('returns roles if authorized', async () => {
     (getServerSession as jest.Mock).mockResolvedValue({ user: { id: '1' } });
-    (getUserPermissionKeys as jest.Mock).mockResolvedValue([PERMISSIONS.USERS_EDIT]);
+    (getUserPermissionKeys as jest.Mock).mockResolvedValue([
+      PERMISSIONS.USERS_EDIT,
+    ]);
     const mockRoles = [{ id: 'r1', name: 'Admin' }];
     (prisma.role.findMany as jest.Mock).mockResolvedValue(mockRoles);
 

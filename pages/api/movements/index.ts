@@ -50,9 +50,9 @@ const toMovementListItem = (movement: {
 }): MovementListItem => ({
   id: movement.id,
   concept: movement.concept,
-  amount: movement.amount,
+  amount:
+    movement.type === MovementType.EXPENSE ? -movement.amount : movement.amount,
   date: movement.date.toISOString(),
-  type: movement.type,
   userName: movement.user?.name ?? null,
 });
 

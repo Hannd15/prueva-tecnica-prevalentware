@@ -78,19 +78,16 @@ const main = async () => {
   });
 
   await prisma.rolePermission.createMany({
-    data: [
-      { roleId: 'role_user', permissionId: 'perm_movements_read' },
-    ],
+    data: [{ roleId: 'role_user', permissionId: 'perm_movements_read' }],
     skipDuplicates: true,
   });
 
-
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exitCode = 1;
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  })
+  main()
+    .catch((e) => {
+      console.error(e);
+      process.exitCode = 1;
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
 };

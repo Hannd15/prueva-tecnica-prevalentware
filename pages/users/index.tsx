@@ -10,6 +10,8 @@ import {
 import { PageHeader } from '@/components/organisms/PageHeader';
 import { AppShell } from '@/components/templates/AppShell';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
 import { type PaginatedUsersResponse, type UserWithRole } from '@/types';
 
@@ -19,6 +21,7 @@ import { NextPageAuth } from '@/pages/_app';
  * Página de gestión de usuarios.
  *
  * Lista usuarios de forma paginada. Requiere permiso `USERS_READ`.
+ * Utiliza una estética de "Directorio" profesional.
  */
 const UsersPage = () => {
   const router = useRouter();
@@ -37,33 +40,61 @@ const UsersPage = () => {
   const columns: Array<DataTableColumn<UserWithRole>> = [
     {
       key: 'name',
-      header: 'Nombre',
-      cell: (row) => <span className='font-medium'>{row.name}</span>,
+      header: 'Usuario',
+      cell: (row) => (
+        <div className='flex items-center gap-3'>
+          <Avatar className='h-8 w-8 border'>
+            <AvatarFallback className='bg-secondary text-secondary-foreground text-xs'>
+              {(row.name ?? 'U').substring(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div className='flex flex-col'>
+            <span className='font-medium text-foreground'>{row.name}</span>
+            <span className='text-xs text-muted-foreground md:hidden'>
+              {row.roleName}
+            </span>
+          </div>
+        </div>
+      ),
     },
     {
       key: 'email',
-      header: 'Correo',
-      cell: (row) => row.email,
-    },
-    {
-      key: 'phone',
-      header: 'Teléfono',
-      cell: (row) => row.phone ?? '-',
+      header: 'Contacto',
+      className: 'hidden sm:table-cell',
+      cell: (row) => (
+        <div className='flex flex-col'>
+          <span className='text-sm'>{row.email}</span>
+          {row.phone && (
+            <span className='text-xs text-muted-foreground'>{row.phone}</span>
+          )}
+        </div>
+      ),
     },
     {
       key: 'role',
       header: 'Rol',
-      cell: (row) => row.roleName,
+      className: 'hidden md:table-cell',
+      cell: (row) => (
+        <Badge variant='secondary' className='font-normal'>
+          {row.roleName}
+        </Badge>
+      ),
     },
     {
       key: 'actions',
-      header: 'Acciones',
-      headerClassName: 'text-right',
+      header: '',
+      headerClassName: 'w-[50px]',
       className: 'text-right',
       cell: (row) => (
-        <Button variant='ghost' size='icon' className='h-8 w-8' asChild>
+        <Button
+          variant='ghost'
+          size='icon'
+          className='h-8 w-8 hover:bg-secondary'
+          asChild
+          title='Editar usuario'
+        >
           <Link href={`/users/${row.id}`}>
-            <Edit className='h-4 w-4' />
+            <Edit className='h-4 w-4 text-muted-foreground' />
           </Link>
         </Button>
       ),
@@ -85,20 +116,20 @@ const UsersPage = () => {
   };
 
   return (
-    <AppShell pageTitle='Gestión de usuarios' contentClassName='space-y-6'>
+    <AppShell pageTitle='Usuarios' contentClassName='space-y-8'>
       <PageHeader
-        title='Gestión de usuarios'
-        subtitle='Administra los usuarios del sistema y sus roles.'
+        title='Usuarios'
+        subtitle='Administra los accesos y perfiles de los colaboradores.'
       />
 
       <DataTable
-        title='Usuarios'
-        description='Listado de usuarios registrados en la plataforma.'
+        title='Directorio de Usuarios'
+        description='Gestiona los permisos y la información de contacto de los usuarios.'
         columns={columns}
         rows={data?.data ?? []}
         getRowKey={(row) => row.id}
         isLoading={isLoading}
-        emptyMessage='No hay usuarios registrados.'
+        emptyMessage='No se encontraron usuarios.'
         pagination={
           data
             ? {
@@ -108,7 +139,6 @@ const UsersPage = () => {
               }
             : undefined
         }
-        className='flex-1 min-h-0'
       />
     </AppShell>
   );

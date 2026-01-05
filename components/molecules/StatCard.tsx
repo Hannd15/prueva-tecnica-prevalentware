@@ -12,10 +12,8 @@ export type StatCardProps = {
 };
 
 /**
- * Tarjeta especializada para mostrar métricas.
- *
- * - Soporta variantes para datos financieros (éxito/destructivo).
- * - Incluye estado de carga integrado.
+ * Tarjeta especializada para mostrar métricas financieras.
+ * Utiliza tabular-nums para asegurar alineación de cifras.
  */
 export const StatCard = ({
   label,
@@ -27,20 +25,34 @@ export const StatCard = ({
 }: StatCardProps) => {
   const variantClasses = {
     default: 'text-foreground',
-    success: 'text-green-600',
-    destructive: 'text-red-600',
+    success: 'text-emerald-600',
+    destructive: 'text-rose-600',
   };
 
   return (
     <TitledCard
       title={label}
-      titleClassName='text-sm font-medium text-muted-foreground'
-      className={cn('overflow-hidden', className)}
-      actions={icon && <div className='text-muted-foreground'>{icon}</div>}
+      titleClassName='text-xs font-bold uppercase tracking-wider text-muted-foreground/70'
+      className={cn(
+        'relative overflow-hidden transition-all hover:border-border/80',
+        className
+      )}
+      actions={
+        icon && (
+          <div className='p-2 bg-muted/50 rounded-lg text-muted-foreground'>
+            {icon}
+          </div>
+        )
+      }
     >
-      <div className={cn('text-2xl font-bold', variantClasses[variant])}>
+      <div
+        className={cn(
+          'text-3xl font-bold tracking-tight tabular-nums',
+          variantClasses[variant]
+        )}
+      >
         {isLoading ? (
-          <div className='h-8 w-24 animate-pulse rounded bg-muted' />
+          <div className='h-9 w-32 animate-pulse rounded-md bg-muted/60' />
         ) : (
           value
         )}

@@ -43,8 +43,10 @@ describe('/api/movements', () => {
 
   it('returns paginated movements if authorized', async () => {
     (getServerSession as jest.Mock).mockResolvedValue({ user: { id: '1' } });
-    (getUserPermissionKeys as jest.Mock).mockResolvedValue([PERMISSIONS.MOVEMENTS_READ]);
-    
+    (getUserPermissionKeys as jest.Mock).mockResolvedValue([
+      PERMISSIONS.MOVEMENTS_READ,
+    ]);
+
     (prisma.movement.count as jest.Mock).mockResolvedValue(1);
     (prisma.movement.findMany as jest.Mock).mockResolvedValue([
       {

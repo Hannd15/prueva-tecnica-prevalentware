@@ -41,8 +41,10 @@ describe('/api/users', () => {
 
   it('returns paginated users if authorized', async () => {
     (getServerSession as jest.Mock).mockResolvedValue({ user: { id: '1' } });
-    (getUserPermissionKeys as jest.Mock).mockResolvedValue([PERMISSIONS.USERS_READ]);
-    
+    (getUserPermissionKeys as jest.Mock).mockResolvedValue([
+      PERMISSIONS.USERS_READ,
+    ]);
+
     (prisma.user.count as jest.Mock).mockResolvedValue(1);
     (prisma.user.findMany as jest.Mock).mockResolvedValue([
       {

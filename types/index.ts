@@ -5,7 +5,6 @@ export type MovementListItem = {
   concept: string;
   amount: number;
   date: string;
-  type: MovementType;
   userName: string | null;
 };
 

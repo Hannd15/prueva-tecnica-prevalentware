@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 export type DataTableColumn<Row> = {
@@ -39,11 +40,8 @@ export type DataTableProps<Row> = {
 };
 
 /**
- * Tabla genérica de datos.
- *
- * - Usa `Table` (shadcn/ui) dentro de una `TitledCard`.
- * - Recibe configuración de columnas/filas para reutilizarse entre módulos.
- * - Renderiza `actions` opcionales en el header (ej: botón "Crear").
+ * Tabla de datos profesional.
+ * Diseño "airy" con tipografía optimizada y estados de carga refinados.
  */
 export const DataTable = <Row,>({
   title,
@@ -62,15 +60,17 @@ export const DataTable = <Row,>({
   const renderContent = () => {
     if (isLoading) {
       return (
-        <div className='flex flex-1 items-center justify-center text-sm text-muted-foreground'>
-          Cargando...
+        <div className='p-6 space-y-4'>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} className='h-12 w-full rounded-lg' />
+          ))}
         </div>
       );
     }
 
     if (error) {
       return (
-        <div className='flex flex-1 items-center justify-center text-sm text-destructive'>
+        <div className='flex flex-1 items-center justify-center p-12 text-sm text-destructive bg-destructive/5'>
           {error}
         </div>
       );
@@ -79,12 +79,12 @@ export const DataTable = <Row,>({
     return (
       <Table containerClassName='flex-1'>
         <TableHeader>
-          <TableRow>
+          <TableRow className='hover:bg-transparent border-b border-border/40'>
             {columns.map((column) => (
               <TableHead
                 key={column.key}
                 className={cn(
-                  'sticky top-0 z-10 bg-background shadow-[0_1px_0_0_rgba(0,0,0,0.1)]',
+                  'h-12 px-6 text-xs font-bold uppercase tracking-wider text-muted-foreground/70',
                   column.headerClassName
                 )}
               >
@@ -98,16 +98,25 @@ export const DataTable = <Row,>({
             <TableRow>
               <TableCell
                 colSpan={columns.length}
-                className='h-24 text-center text-muted-foreground'
+                className='h-32 text-center text-muted-foreground italic'
               >
                 {emptyMessage}
               </TableCell>
             </TableRow>
           ) : (
             rows.map((row) => (
-              <TableRow key={getRowKey(row)}>
+              <TableRow
+                key={getRowKey(row)}
+                className='group transition-colors hover:bg-slate-50/80 border-b border-border/40 last:border-0'
+              >
                 {columns.map((column) => (
-                  <TableCell key={column.key} className={column.className}>
+                  <TableCell
+                    key={column.key}
+                    className={cn(
+                      'px-6 py-4 text-sm tabular-nums',
+                      column.className
+                    )}
+                  >
                     {column.cell(row)}
                   </TableCell>
                 ))}
@@ -124,15 +133,22 @@ export const DataTable = <Row,>({
       title={title}
       description={description}
       actions={actions}
-      className={cn('flex flex-col overflow-hidden', className)}
+      className={cn(
+        'flex flex-col overflow-hidden border-border/40',
+        className
+      )}
       contentClassName='flex flex-1 flex-col overflow-hidden p-0'
     >
       {renderContent()}
 
-      {pagination && <Pagination {...pagination} />}
+      {pagination && (
+        <div className='border-t border-border/40 bg-slate-50/30'>
+          <Pagination {...pagination} />
+        </div>
+      )}
 
       {footer && (
-        <div className='flex justify-end border-t bg-muted/50 p-4'>
+        <div className='flex justify-end border-t border-border/40 bg-slate-50/50 p-4'>
           {footer}
         </div>
       )}
