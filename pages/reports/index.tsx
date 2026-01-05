@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { PageHeader } from '@/components/organisms/PageHeader';
 import { AppShell } from '@/components/templates/AppShell';
-import { ReportsStatsGrid } from '@/components/organisms/ReportsStatsGrid';
+import { FinancialSummaryGrid } from '@/components/organisms/FinancialSummaryGrid';
 import { ReportsChartSection } from '@/components/organisms/ReportsChartSection';
 import { Button } from '@/components/ui/button';
 import { PERMISSIONS } from '@/lib/rbac/permissions';
@@ -67,7 +67,7 @@ const ReportsPage = () => {
 
       {data ? (
         <>
-          <ReportsStatsGrid data={data} isLoading={isLoading} />
+          <FinancialSummaryGrid summary={data.summary} isLoading={isLoading} />
           <ReportsChartSection data={data} isLoading={isLoading} />
         </>
       ) : null}

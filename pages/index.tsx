@@ -1,11 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { TrendingUp, TrendingDown, Wallet } from 'lucide-react';
 
 import { PageHeader } from '@/components/organisms/PageHeader';
 import { HomeActionCards } from '@/components/organisms/HomeActionCards';
 import { AppShell } from '@/components/templates/AppShell';
-import { StatCard } from '@/components/molecules/StatCard';
-import { formatCurrency } from '@/lib/utils';
+import { FinancialSummaryGrid } from '@/components/organisms/FinancialSummaryGrid';
 import { type PaginatedMovementsResponse } from '@/types';
 
 /**
@@ -23,12 +21,6 @@ const Home = () => {
     },
   });
 
-  const summary = data?.summary ?? {
-    balance: 0,
-    totalIncomes: 0,
-    totalExpenses: 0,
-  };
-
   return (
     <AppShell pageTitle='Dashboard' contentClassName='space-y-10'>
       <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
@@ -38,29 +30,7 @@ const Home = () => {
         />
       </div>
 
-      <div className='grid gap-6 md:grid-cols-3'>
-        <StatCard
-          label='Balance Total'
-          value={formatCurrency(summary.balance)}
-          icon={<Wallet className='h-5 w-5' />}
-          variant={summary.balance >= 0 ? 'success' : 'destructive'}
-          isLoading={isLoading}
-        />
-        <StatCard
-          label='Ingresos'
-          value={formatCurrency(summary.totalIncomes)}
-          icon={<TrendingUp className='h-5 w-5' />}
-          variant='success'
-          isLoading={isLoading}
-        />
-        <StatCard
-          label='Egresos'
-          value={formatCurrency(summary.totalExpenses)}
-          icon={<TrendingDown className='h-5 w-5' />}
-          variant='destructive'
-          isLoading={isLoading}
-        />
-      </div>
+      <FinancialSummaryGrid summary={data?.summary} isLoading={isLoading} />
 
       <div className='space-y-6'>
         <h2 className='text-lg font-semibold tracking-tight'>

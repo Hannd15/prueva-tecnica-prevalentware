@@ -50,18 +50,6 @@ INSERT INTO "permission" ("id", "key", "description") VALUES
     ('perm_movements_create', 'MOVEMENTS_CREATE', 'Can create movements')
 ON CONFLICT ("key") DO NOTHING;
 
--- Seed role-permission mapping
--- ADMIN has all permissions
-INSERT INTO "role_permission" ("roleId", "permissionId")
-SELECT 'role_admin', p."id" FROM "permission" p
-ON CONFLICT DO NOTHING;
-
--- USER has a subset
-INSERT INTO "role_permission" ("roleId", "permissionId") VALUES
-    ('role_user', 'perm_movements_read'),
-    ('role_user', 'perm_movements_create')
-ON CONFLICT DO NOTHING;
-
 -- Update user table to reference roles table
 ALTER TABLE "user" ADD COLUMN "roleId" TEXT NOT NULL DEFAULT 'role_user';
 
