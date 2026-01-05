@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { MovementType } from '@prisma/client';
 import { ArrowLeft, Save } from 'lucide-react';
 
@@ -24,32 +25,28 @@ type ApiError = { error: string };
  */
 const NewMovementPage = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const [amount, setAmount] = useState<string>('');
   const [concept, setConcept] = useState<string>('');
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [type, setType] = useState<MovementType>(MovementType.INCOME);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
-    setIsSubmitting(true);
-
-    try {
+  const mutation = useMutation({
+    mutationFn: async (newData: {
+      amount: string;
+      concept: string;
+      date: string | null;
+      type: MovementType;
+    }) => {
       const res = await fetch('/api/movements', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify({
-          amount,
-          concept,
-          date: date ? date.toISOString().split('T')[0] : null,
-          type,
-        }),
+        body: JSON.stringify(newData),
       });
 
       if (!res.ok) {
@@ -57,13 +54,33 @@ const NewMovementPage = () => {
         throw new Error(body?.error ?? `No se pudo guardar (${res.status})`);
       }
 
-      await router.push('/movements');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido');
-    } finally {
-      setIsSubmitting(false);
-    }
+      return res.json();
+    },
+    onSuccess: async () => {
+      // Invalidamos las queries de movimientos para que la tabla se refresque
+      await queryClient.invalidateQueries({ queryKey: ['movements'] });
+      await queryClient.invalidateQueries({ queryKey: ['reports'] });
+      await queryClient.invalidateQueries({ queryKey: ['movements-summary'] });
+      router.push('/movements');
+    },
+    onError: (err: Error) => {
+      setError(err.message);
+    },
+  });
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+
+    mutation.mutate({
+      amount,
+      concept,
+      date: date ? date.toISOString().split('T')[0] : null,
+      type,
+    });
   };
+
+  const isSubmitting = mutation.isPending;
 
   return (
     <AppShell

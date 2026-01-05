@@ -57,7 +57,7 @@ const EditUserPage = () => {
     },
     onSuccess: async () => {
       // Si el usuario editado es el mismo que tiene la sesión iniciada,
-      // forzamos una recarga completa para refrescar los permisos en el cliente y servidor.
+      // se fuerza una recarga completa para refrescar los permisos en el cliente y servidor.
       const sessionRes = await fetch('/api/auth/get-session');
       const session = await sessionRes.json().catch(() => null);
 
