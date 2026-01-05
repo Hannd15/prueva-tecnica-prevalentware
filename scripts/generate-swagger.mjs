@@ -1,20 +1,8 @@
 import swaggerJsdoc from 'swagger-jsdoc';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 
-// Try to load pre-generated spec for production
-const specPath = path.join(process.cwd(), 'lib/swagger-spec.json');
-let preGeneratedSpec = null;
-
-if (fs.existsSync(specPath)) {
-  try {
-    preGeneratedSpec = JSON.parse(fs.readFileSync(specPath, 'utf8'));
-  } catch (e) {
-    console.error('Error loading pre-generated swagger spec:', e);
-  }
-}
-
-export const options: swaggerJsdoc.Options = {
+const options = {
   definition: {
     openapi: '3.0.0',
     info: {
@@ -201,10 +189,12 @@ export const options: swaggerJsdoc.Options = {
       },
     ],
   },
-  apis: [
-    path.join(process.cwd(), 'pages/api/**/*.ts'),
-    path.join(process.cwd(), 'lib/swagger.ts'),
-  ],
+  apis: ['./pages/api/**/*.ts', './lib/swagger.ts'],
 };
 
-export const spec = preGeneratedSpec || swaggerJsdoc(options);
+const spec = swaggerJsdoc(options);
+
+const outputPath = path.join(process.cwd(), 'lib/swagger-spec.json');
+fs.writeFileSync(outputPath, JSON.stringify(spec, null, 2));
+
+console.log('Swagger spec generated successfully at lib/swagger-spec.json');
