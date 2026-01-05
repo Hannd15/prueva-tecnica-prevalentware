@@ -41,7 +41,7 @@ const options: swaggerJsdoc.Options = {
             name: { type: 'string' },
           },
           required: ['id', 'name'],
-          additionalProperties: true,
+          additionalProperties: false,
         },
         UserListItem: {
           type: 'object',
@@ -87,7 +87,7 @@ const options: swaggerJsdoc.Options = {
             roleId: { type: 'string' },
           },
           required: ['id', 'email', 'roleId'],
-          additionalProperties: true,
+          additionalProperties: false,
         },
         MovementListItem: {
           type: 'object',
