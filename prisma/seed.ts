@@ -81,13 +81,13 @@ const main = async () => {
     data: [{ roleId: 'role_user', permissionId: 'perm_movements_read' }],
     skipDuplicates: true,
   });
-
-  main()
-    .catch((e) => {
-      console.error(e);
-      process.exitCode = 1;
-    })
-    .finally(async () => {
-      await prisma.$disconnect();
-    });
 };
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
